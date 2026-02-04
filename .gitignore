@@ -1,0 +1,55 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data files (too large)
+VerSe/
+*.nii.gz
+*.nii
+*.obj
+*.urdf
+*.xml
+
+# Outputs (too large for git, keep structure only)
+outputs/**/ct_*.nii.gz
+outputs/**/ts_*/
+outputs/**/*.nii.gz
+_archive*/
+
+# Keep important outputs
+!outputs/phase4_surgical_artifacts/configurations/*.png
+!outputs/phase4_surgical_artifacts/evaluation_moderate/COMPARISON_PLOT.png
+!outputs/phase4_surgical_artifacts/screw_*.png
+
+# Logs
+*.log
+wandb/
+
+# Checkpoints
+*.pth
+*.ckpt
+*.zip
+
+# Jupyter
+.ipynb_checkpoints/
+
+# System
+.DS_Store
+Thumbs.db

@@ -1,0 +1,42 @@
+{
+  "baseline": {
+    "L1": 0.8862968774718767,
+    "L2": 0.8502354721613699
+  },
+  "config1_L1_screws_only": {
+    "L1": {
+      "dice": 0.8547954400239228,
+      "matched_to": "vertebrae_L3.nii.gz",
+      "distance": 1.4281337536493728
+    },
+    "L2": {
+      "dice": 0.730429262873919,
+      "matched_to": "vertebrae_L4.nii.gz",
+      "distance": 2.858777516695442
+    }
+  },
+  "config2_L1_screws_rod": {
+    "L1": {
+      "dice": 0.8457635695776221,
+      "matched_to": "vertebrae_L3.nii.gz",
+      "distance": 1.6205981083527197
+    },
+    "L2": {
+      "dice": 0.7032942067398713,
+      "matched_to": "vertebrae_L4.nii.gz",
+      "distance": 4.35969420019543
+    }
+  },
+  "config3_multi_level": {
+    "L1": {
+      "dice": 0.8668211158956797,
+      "matched_to": "vertebrae_L3.nii.gz",
+      "distance": 0.6599246334992508
+    },
+    "L2": {
+      "dice": 0.8176210722804107,
+      "matched_to": "vertebrae_L4.nii.gz",
+      "distance": 2.9764919092532143
+    }
+  }
+}
