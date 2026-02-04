@@ -1,0 +1,42 @@
+# Core PyTorch packages
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Deep Learning utilities
+einops>=0.6.0
+transformers>=4.30.0
+
+# Loss functions
+libauc>=1.4.0
+
+# Logging and monitoring
+wandb>=0.15.0
+colorlog>=6.7.0
+tqdm>=4.65.0
+
+# Process management
+setproctitle>=1.3.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Medical imaging
+pydicom>=3.0.0
+
+# Image processing
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# Scientific computing
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Parallel processing
+parmap>=1.7.0
+

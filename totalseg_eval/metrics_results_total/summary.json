@@ -1,0 +1,201 @@
+{
+  "num_cases": 25,
+  "mean_dice": 0.8513113666889685,
+  "median_dice": 0.8951769237587236,
+  "std_dice": 0.11162475091928942,
+  "mean_iou": 0.77843527707981,
+  "median_iou": 0.8105964585747891,
+  "std_iou": 0.10725178752553956,
+  "structural_available": 25,
+  "structural_mean_nvc": 0.9824242424242425,
+  "structural_mean_vla": 0.9379514963880289,
+  "structural_mean_soed": 0.19262602796315278,
+  "structural_mean_strict_nvc": 0.8165335933416429,
+  "extra_pred_case_rate": 1.0,
+  "extra_pred_rate_mean": 0.14752011263590212,
+  "extra_pred_cases": [
+    {
+      "subject": "sub-gl108",
+      "extra_labels": [
+        11
+      ]
+    },
+    {
+      "subject": "sub-gl146",
+      "extra_labels": [
+        13
+      ]
+    },
+    {
+      "subject": "sub-gl195",
+      "extra_labels": [
+        12,
+        13
+      ]
+    },
+    {
+      "subject": "sub-gl216",
+      "extra_labels": [
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "subject": "sub-gl217",
+      "extra_labels": [
+        11,
+        12
+      ]
+    },
+    {
+      "subject": "sub-gl279",
+      "extra_labels": [
+        7,
+        8
+      ]
+    },
+    {
+      "subject": "sub-gl348",
+      "extra_labels": [
+        10,
+        11
+      ]
+    },
+    {
+      "subject": "sub-gl419",
+      "extra_labels": [
+        12,
+        13
+      ]
+    },
+    {
+      "subject": "sub-gl428",
+      "extra_labels": [
+        14,
+        15
+      ]
+    },
+    {
+      "subject": "sub-gl492",
+      "extra_labels": [
+        12,
+        13
+      ]
+    },
+    {
+      "subject": "sub-verse502",
+      "extra_labels": [
+        7,
+        25
+      ]
+    },
+    {
+      "subject": "sub-verse509",
+      "extra_labels": [
+        5,
+        6
+      ]
+    },
+    {
+      "subject": "sub-verse512",
+      "extra_labels": [
+        4,
+        5,
+        6,
+        25
+      ]
+    },
+    {
+      "subject": "sub-verse517",
+      "extra_labels": [
+        7,
+        8
+      ]
+    },
+    {
+      "subject": "sub-verse524",
+      "extra_labels": [
+        5,
+        24,
+        25
+      ]
+    },
+    {
+      "subject": "sub-verse526",
+      "extra_labels": [
+        6,
+        7,
+        25
+      ]
+    },
+    {
+      "subject": "sub-verse540",
+      "extra_labels": [
+        6,
+        7
+      ]
+    },
+    {
+      "subject": "sub-verse546",
+      "extra_labels": [
+        16,
+        17,
+        25
+      ]
+    },
+    {
+      "subject": "sub-verse550",
+      "extra_labels": [
+        17,
+        25
+      ]
+    },
+    {
+      "subject": "sub-verse551",
+      "extra_labels": [
+        8
+      ]
+    },
+    {
+      "subject": "sub-verse552",
+      "extra_labels": [
+        5,
+        6,
+        7,
+        24,
+        25
+      ]
+    },
+    {
+      "subject": "sub-verse555",
+      "extra_labels": [
+        14,
+        15,
+        25
+      ]
+    },
+    {
+      "subject": "sub-verse558",
+      "extra_labels": [
+        5,
+        25
+      ]
+    },
+    {
+      "subject": "sub-verse560",
+      "extra_labels": [
+        6,
+        7
+      ]
+    },
+    {
+      "subject": "sub-verse563",
+      "extra_labels": [
+        24,
+        25
+      ]
+    }
+  ],
+  "extra_pred_total": 57
+}

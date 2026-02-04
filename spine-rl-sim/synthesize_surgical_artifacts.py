@@ -16,6 +16,17 @@ from skimage.morphology import binary_dilation, ball
 from pathlib import Path
 import matplotlib.pyplot as plt
 
+# Import project configuration
+try:
+    from config import (
+        get_verse_ct_path, get_phase4_output_path,
+        DEFAULT_SUBJECT, STREAK_INTENSITY, BLOOMING_SIGMA, CORRUPTION_RADIUS
+    )
+    USE_CONFIG = True
+except ImportError:
+    print("⚠ Warning: config.py not found, using hardcoded paths")
+    USE_CONFIG = False
+
 
 def add_metal_hu_values(ct_volume, metal_mask, metal_hu=20000):
     """
@@ -289,11 +300,16 @@ def main():
     """
     Generate CT with surgical artifacts and visualize.
     """
-    # Paths
-    ct_path = Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
-    metal_path = Path("outputs/phase4_surgical_artifacts/implant_models/L1_pedicle_screws_mask.nii.gz")
-    output_dir = Path("outputs/phase4_surgical_artifacts/artifact_synthesis")
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # Paths (use config if available, otherwise fallback to hardcoded)
+    if USE_CONFIG:
+        ct_path = get_verse_ct_path(DEFAULT_SUBJECT)
+        output_dir = get_phase4_output_path("artifact_synthesis")
+        metal_path = get_phase4_output_path() / "implant_models" / "L1_pedicle_screws_mask.nii.gz"
+    else:
+        ct_path = Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
+        metal_path = Path("outputs/phase4_surgical_artifacts/implant_models/L1_pedicle_screws_mask.nii.gz")
+        output_dir = Path("outputs/phase4_surgical_artifacts/artifact_synthesis")
+        output_dir.mkdir(parents=True, exist_ok=True)
     
     print("Loading data...")
     ct_nii = nib.load(str(ct_path))

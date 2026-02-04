@@ -1,0 +1,9 @@
+{
+  "dice_original": 0.8862968774718767,
+  "dice_artifact": 0.8539739107615992,
+  "degradation_absolute": 0.032322966710277456,
+  "degradation_percent": 3.6469683614904875,
+  "matched_vertebra_original": "vertebrae_L3.nii.gz",
+  "matched_vertebra_artifact": "vertebrae_L3.nii.gz",
+  "phase3_degradation_percent": 1.0
+}

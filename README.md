@@ -44,9 +44,44 @@ conda create -n wisespine python=3.11
 conda activate wisespine
 
 # Install dependencies
-pip install torch pybullet stable-baselines3 nibabel trimesh matplotlib
+cd wisespine
+pip install -r spine-rl-sim/requirements.txt
 pip install TotalSegmentator  # For evaluation
 ```
+
+### Setup Configuration
+```bash
+# Copy environment template
+cp env.template .env
+
+# Edit .env with your paths (only if not using default structure)
+# WISESPINE_ROOT=/your/custom/path
+# VERSE_DATA_DIR=/your/verse/data
+
+# Verify configuration
+python spine-rl-sim/config.py
+```
+
+### Run Phase 4 (Surgical Artifacts)
+
+```bash
+cd spine-rl-sim
+
+# Step 1: Place pedicle screws
+python place_pedicle_screw.py
+
+# Step 2: Add metal artifacts
+python synthesize_surgical_artifacts.py
+
+# Step 3: Evaluate TotalSegmentator
+python evaluate_surgical_artifacts.py
+
+# Step 4: Test multiple configurations
+python create_surgical_configurations.py
+python evaluate_all_configurations.py
+```
+
+All paths are now managed through `.env` - **no more hard-coded paths!**
 
 ### Run Phase 4 (Surgical Artifacts)
 ```bash

@@ -24,6 +24,13 @@ from datetime import datetime
 from modules.pybullet_fracture_env import PyBulletFractureEnv
 from modules.pybullet_ct_renderer import render_pybullet_to_ct
 
+# Import project configuration
+try:
+    from config import get_phase3_output_path, RL_TIMESTEPS
+    USE_CONFIG = True
+except ImportError:
+    USE_CONFIG = False
+
 
 class LightweightValidationCallback(BaseCallback):
     """
@@ -201,8 +208,13 @@ def main():
     print("="*70)
     
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    output_dir = Path(f"/gscratch/scrubbed/june0604/vindr/outputs/phase3_physics_fracture/rl_training/{timestamp}")
-    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Use config path if available
+    if USE_CONFIG:
+        output_dir = get_phase3_output_path(f"rl_training/{timestamp}")
+    else:
+        output_dir = Path(f"outputs/phase3_physics_fracture/rl_training/{timestamp}")
+        output_dir.mkdir(parents=True, exist_ok=True)
     
     print(f"\nOutput directory: {output_dir}")
     print(f"Total timesteps: 50000")

@@ -1,0 +1,77 @@
+{
+  "pred_path": "/gscratch/scrubbed/june0604/vindr/totalseg_eval/predictions_body/sub-gl195/vertebrae_body.nii.gz",
+  "gt_path": "/gscratch/scrubbed/june0604/vindr/VerSe/dataset-03test/derivatives/sub-gl195/sub-gl195_dir-ax_seg-vert_msk.nii.gz",
+  "labels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "pred_labels": [
+    1
+  ],
+  "overall": {
+    "mode": "binary_pred",
+    "binary_dice": 0.611736350738431,
+    "binary_iou": 0.4406485404008205,
+    "mean_iou": 0.4406485404008205,
+    "mean_dice": 0.611736350738431
+  },
+  "per_label": {
+    "1": {
+      "dice": 0.1443982696319368,
+      "iou": 0.07781749028876782
+    },
+    "2": {
+      "dice": 0.16083658063416653,
+      "iou": 0.08745094587103228
+    },
+    "3": {
+      "dice": 0.1216840533884458,
+      "iou": 0.06478359171085597
+    },
+    "4": {
+      "dice": 0.11905910510019764,
+      "iou": 0.06329763227747524
+    },
+    "5": {
+      "dice": 0.12388397587204936,
+      "iou": 0.06603215061310361
+    },
+    "6": {
+      "dice": 0.12566479588939738,
+      "iou": 0.06704499580150522
+    },
+    "7": {
+      "dice": 0.1478361243635222,
+      "iou": 0.07981805838508275
+    },
+    "8": {
+      "dice": 0.12883769714807702,
+      "iou": 0.06885436765825288
+    },
+    "9": {
+      "dice": 0.13136659607740825,
+      "iou": 0.0703008925145044
+    },
+    "10": {
+      "dice": 0.12991317623214244,
+      "iou": 0.06946906131938439
+    },
+    "11": {
+      "dice": 0.14542307729461185,
+      "iou": 0.07841307390108927
+    }
+  },
+  "structural": {
+    "available": false,
+    "reason": "prediction is binary or unlabeled"
+  }
+}

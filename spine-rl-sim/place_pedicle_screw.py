@@ -12,6 +12,17 @@ from skimage.morphology import ball
 import matplotlib.pyplot as plt
 from pathlib import Path
 
+# Import project configuration
+try:
+    from config import (
+        get_verse_ct_path, get_verse_seg_path, get_phase4_output_path,
+        DEFAULT_SUBJECT, CT_SPACING
+    )
+    USE_CONFIG = True
+except ImportError:
+    print("⚠ Warning: config.py not found, using hardcoded paths")
+    USE_CONFIG = False
+
 
 def find_pedicle_centers(vertebra_mask):
     """
@@ -309,11 +320,16 @@ def main():
     """
     Test pedicle screw placement on verse563 L1 vertebra.
     """
-    # Paths
-    ct_path = Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
-    mask_path = Path("VerSe/dataset-03test/derivatives/sub-verse563/sub-verse563_dir-iso_seg-vert_msk.nii.gz")
-    output_dir = Path("outputs/phase4_surgical_artifacts")
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # Paths (use config if available, otherwise fallback to hardcoded)
+    if USE_CONFIG:
+        ct_path = get_verse_ct_path(DEFAULT_SUBJECT)
+        mask_path = get_verse_seg_path(DEFAULT_SUBJECT)
+        output_dir = get_phase4_output_path()
+    else:
+        ct_path = Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
+        mask_path = Path("VerSe/dataset-03test/derivatives/sub-verse563/sub-verse563_dir-iso_seg-vert_msk.nii.gz")
+        output_dir = Path("outputs/phase4_surgical_artifacts")
+        output_dir.mkdir(parents=True, exist_ok=True)
     
     print("Loading CT and mask...")
     ct_nii = nib.load(str(ct_path))

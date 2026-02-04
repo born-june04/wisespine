@@ -1,0 +1,38 @@
+# Spine Point Cloud Assembly Project Requirements
+
+# Core dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Geometry processing
+scikit-image>=0.20.0  # marching cubes
+trimesh>=3.20.0       # mesh operations
+open3d>=0.17.0        # point cloud operations (optional)
+
+# Point cloud processing
+point-cloud-utils>=0.30.0  # Poisson disk sampling
+
+# SE(3) equivariance
+e3nn>=0.5.0           # SE(3) equivariant networks (optional)
+torch-geometric>=2.3.0  # Graph neural networks
+
+# Visualization
+matplotlib>=3.7.0
+plotly>=5.14.0
+mayavi>=4.8.0         # 3D visualization (optional)
+
+# Data handling
+pandas>=2.0.0
+h5py>=3.9.0
+tqdm>=4.65.0
+
+# Logging and experiment tracking
+tensorboard>=2.13.0
+wandb>=0.15.0         # Optional
+
+# Utilities
+pyyaml>=6.0
+pathlib2>=2.3.7
+

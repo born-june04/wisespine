@@ -19,6 +19,9 @@ ENV/
 *.swp
 *.swo
 
+# Environment configuration (contains local paths)
+.env
+
 # Data files (too large)
 VerSe/
 *.nii.gz
@@ -32,11 +35,6 @@ outputs/**/ct_*.nii.gz
 outputs/**/ts_*/
 outputs/**/*.nii.gz
 _archive*/
-
-# Keep important outputs
-!outputs/phase4_surgical_artifacts/configurations/*.png
-!outputs/phase4_surgical_artifacts/evaluation_moderate/COMPARISON_PLOT.png
-!outputs/phase4_surgical_artifacts/screw_*.png
 
 # Logs
 *.log

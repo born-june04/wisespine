@@ -15,6 +15,17 @@ from scipy.ndimage import center_of_mass
 from pathlib import Path
 import matplotlib.pyplot as plt
 
+# Import project configuration
+try:
+    from config import (
+        get_verse_ct_path, get_verse_seg_path, get_phase4_output_path,
+        DEFAULT_SUBJECT
+    )
+    USE_CONFIG = True
+except ImportError:
+    print("⚠ Warning: config.py not found, using hardcoded paths")
+    USE_CONFIG = False
+
 
 def find_pedicle_centers(vertebra_mask):
     """Find left and right pedicle centers."""
@@ -285,11 +296,16 @@ def main():
     2. L1 only, screws + rod
     3. L1+L2+L3, screws + rods (multi-level)
     """
-    # Load data
-    ct_path = Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
-    mask_path = Path("VerSe/dataset-03test/derivatives/sub-verse563/sub-verse563_dir-iso_seg-vert_msk.nii.gz")
-    output_dir = Path("outputs/phase4_surgical_artifacts/configurations")
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # Paths (use config if available, otherwise fallback to hardcoded)
+    if USE_CONFIG:
+        ct_path = get_verse_ct_path(DEFAULT_SUBJECT)
+        mask_path = get_verse_seg_path(DEFAULT_SUBJECT)
+        output_dir = get_phase4_output_path("configurations")
+    else:
+        ct_path = Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
+        mask_path = Path("VerSe/dataset-03test/derivatives/sub-verse563/sub-verse563_dir-iso_seg-vert_msk.nii.gz")
+        output_dir = Path("outputs/phase4_surgical_artifacts/configurations")
+        output_dir.mkdir(parents=True, exist_ok=True)
     
     print("Loading data...")
     ct_nii = nib.load(str(ct_path))

@@ -144,7 +144,7 @@ displacement_voxels = displacement_mm / spacing  # mm → voxels
 
 **Visualization**:
 
-![Fractured CT Comparison](outputs/phase3_physics_fracture/visualizations/fractured_ct_comparison.png)
+![Fractured CT Comparison](./outputs/phase3_physics_fracture/visualizations/fractured_ct_comparison.png)
 
 *Figure 1: PyBullet fracture simulation result. Left: Original, Right: Fractured*
 
@@ -169,19 +169,19 @@ Training time: ~2 hours
 
 **Learning Curve**:
 
-![Training Progress](outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/training_progress.png)
+![Training Progress](./outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/training_progress.png)
 
 *Figure 2: RL training progress. Mean reward gradually increases (Dice decreases)*
 
 **Validation Samples**:
 
-![RL Result Step 10k](outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_010000/comparison.png)
+![RL Result Step 10k](./outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_010000/comparison.png)
 *Step 10,000*
 
-![RL Result Step 30k](outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_030000/comparison.png)
+![RL Result Step 30k](./outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_030000/comparison.png)
 *Step 30,000*
 
-![RL Result Step 50k](outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_050000/comparison.png)
+![RL Result Step 50k](./outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_050000/comparison.png)
 *Step 50,000 (Final)*
 
 ### 3.3 Phase 3 Quantitative Results
@@ -203,7 +203,7 @@ Training time: ~2 hours
 
 **Visual Comparison**:
 
-![Summary Report](outputs/phase3_physics_fracture/visualizations/SUMMARY_REPORT.png)
+![Summary Report](./outputs/phase3_physics_fracture/visualizations/SUMMARY_REPORT.png)
 
 *Figure 3: Phase 3 comprehensive comparison. Fragment separation visible but distant from actual clinical images*
 
@@ -329,7 +329,7 @@ ct_with_screws[screw_mask > 0] = 20000  # Typical metal HU
 
 **Visualization**:
 
-![Screw Placement](outputs/phase4_surgical_artifacts/screw_placement_test.png)
+![Screw Placement](./outputs/phase4_surgical_artifacts/screw_placement_test.png)
 
 *Figure 4: Pedicle screw placement. Red contour: L1 vertebra, White bright spots: screws*
 
@@ -374,7 +374,7 @@ corruption_radius = 10 mm
 
 **Visualization**:
 
-![Screw with Artifacts](outputs/phase4_surgical_artifacts/screw_visualization_with_artifacts.png)
+![Screw with Artifacts](./outputs/phase4_surgical_artifacts/screw_visualization_with_artifacts.png)
 
 *Figure 5: After adding metal artifacts. Screws shine brightly, streak artifacts visible*
 
@@ -434,7 +434,7 @@ def find_matching_vertebra(gt_mask, ts_predictions):
 num_voxels = 10,265
 ```
 
-![Config 1](outputs/phase4_surgical_artifacts/configurations/config1_L1_screws_only.png)
+![Config 1](./outputs/phase4_surgical_artifacts/configurations/config1_L1_screws_only.png)
 
 #### Config 2: L1 Screws + Rod
 ```python
@@ -442,7 +442,7 @@ num_voxels = 10,265
 num_voxels = 14,484 (+41%)
 ```
 
-![Config 2](outputs/phase4_surgical_artifacts/configurations/config2_L1_screws_rod.png)
+![Config 2](./outputs/phase4_surgical_artifacts/configurations/config2_L1_screws_rod.png)
 
 #### Config 3: Multi-level (L1+L2) Screws + Rods
 ```python
@@ -450,7 +450,7 @@ num_voxels = 14,484 (+41%)
 num_voxels = 33,280 (+224%)
 ```
 
-![Config 3](outputs/phase4_surgical_artifacts/configurations/config3_multi_level.png)
+![Config 3](./outputs/phase4_surgical_artifacts/configurations/config3_multi_level.png)
 
 **Actual Results** ✅:
 
@@ -465,7 +465,7 @@ num_voxels = 33,280 (+224%)
 
 **Comprehensive Comparison Visualization**:
 
-![Configuration Comparison](outputs/phase4_surgical_artifacts/evaluation_moderate/COMPARISON_PLOT.png)
+![Configuration Comparison](./outputs/phase4_surgical_artifacts/evaluation_moderate/COMPARISON_PLOT.png)
 
 *Figure 6: Comparison of 3 surgical configurations. Config 2 (Screws + Rod) most effective (17.28% degradation on L2)*
 
@@ -842,7 +842,7 @@ for Robust Spine Segmentation under Surgical Artifacts"
 ### 9.1 File Structure
 
 ```
-wisespine/
+./
 ├── spine-rl-sim/               # Main code
 │   ├── modules/
 │   │   ├── pybullet_fracture_env.py    # Phase 3 RL env

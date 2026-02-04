@@ -19,6 +19,17 @@ import sys
 sys.path.append('spine-rl-sim')
 from synthesize_surgical_artifacts import synthesize_surgical_artifacts
 
+# Import project configuration
+try:
+    from config import (
+        get_verse_ct_path, get_verse_seg_path, get_phase4_output_path,
+        DEFAULT_SUBJECT
+    )
+    USE_CONFIG = True
+except ImportError:
+    print("⚠ Warning: config.py not found, using hardcoded paths")
+    USE_CONFIG = False
+
 
 def run_totalsegmentator(ct_path, output_dir):
     """Run TotalSegmentator."""
@@ -115,11 +126,16 @@ def evaluate_configuration(config_name, metal_mask_path, severity='moderate'):
     print(f"Evaluating: {config_name} (severity={severity})")
     print("="*70)
     
-    # Paths
-    ct_original_path = Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
-    gt_mask_path = Path("VerSe/dataset-03test/derivatives/sub-verse563/sub-verse563_dir-iso_seg-vert_msk.nii.gz")
-    output_dir = Path(f"outputs/phase4_surgical_artifacts/evaluation_{severity}")
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # Paths (use config if available, otherwise fallback to hardcoded)
+    if USE_CONFIG:
+        ct_original_path = get_verse_ct_path(DEFAULT_SUBJECT)
+        gt_mask_path = get_verse_seg_path(DEFAULT_SUBJECT)
+        output_dir = get_phase4_output_path(f"evaluation_{severity}")
+    else:
+        ct_original_path = Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
+        gt_mask_path = Path("VerSe/dataset-03test/derivatives/sub-verse563/sub-verse563_dir-iso_seg-vert_msk.nii.gz")
+        output_dir = Path(f"outputs/phase4_surgical_artifacts/evaluation_{severity}")
+        output_dir.mkdir(parents=True, exist_ok=True)
     
     # Load data
     ct_nii = nib.load(str(ct_original_path))
@@ -184,11 +200,17 @@ def main():
     print("Getting BASELINE (Original CT, no hardware)")
     print("="*70)
     
-    ct_original_path = Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
-    gt_mask_path = Path("VerSe/dataset-03test/derivatives/sub-verse563/sub-verse563_dir-iso_seg-vert_msk.nii.gz")
+    # Paths (use config if available, otherwise fallback to hardcoded)
+    if USE_CONFIG:
+        ct_original_path = get_verse_ct_path(DEFAULT_SUBJECT)
+        gt_mask_path = get_verse_seg_path(DEFAULT_SUBJECT)
+        baseline_ts_dir = get_phase4_output_path("evaluation") / "ts_original"
+    else:
+        ct_original_path = Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
+        gt_mask_path = Path("VerSe/dataset-03test/derivatives/sub-verse563/sub-verse563_dir-iso_seg-vert_msk.nii.gz")
+        baseline_ts_dir = Path("outputs/phase4_surgical_artifacts/evaluation/ts_original")
     
     # Use existing baseline if available
-    baseline_ts_dir = Path("outputs/phase4_surgical_artifacts/evaluation/ts_original")
     
     if not baseline_ts_dir.exists():
         print("Running TotalSegmentator on original CT...")

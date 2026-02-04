@@ -25,6 +25,16 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Import project configuration
+try:
+    from config import (
+        get_verse_ct_path, get_verse_seg_path, get_phase3_output_path,
+        DEFAULT_SUBJECT, PYBULLET_TIMESTEP, PYBULLET_GRAVITY
+    )
+    USE_CONFIG = True
+except ImportError:
+    USE_CONFIG = False
+
 # CT rendering will be integrated later
 # from modules.ct_renderer_warping import render_deformed_ct
 
@@ -42,10 +52,10 @@ class PyBulletFractureEnv(gym.Env):
     
     def __init__(
         self,
-        subject: str = "sub-verse563",
-        fragment_dir: str = "outputs/phase3_physics_fracture/pybullet_models/L1_fractured",
-        gt_ct_path: str = "VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz",
-        gt_mask_path: str = "VerSe/dataset-03test/derivatives/sub-verse563/sub-verse563_dir-iso_seg-vert_msk.nii.gz",
+        subject: str = None,
+        fragment_dir: str = None,
+        gt_ct_path: str = None,
+        gt_mask_path: str = None,
         max_steps: int = 100,
         physics_steps_per_action: int = 10,
         max_force: float = 0.0001,  # Tuned force!
@@ -56,8 +66,10 @@ class PyBulletFractureEnv(gym.Env):
         Initialize PyBullet fracture environment.
         
         Args:
-            subject: Subject ID
-            fragment_dir: Directory containing fragment OBJ files
+            subject: Subject ID (uses config default if None)
+            fragment_dir: Directory containing fragment OBJ files (uses config if None)
+            gt_ct_path: Ground truth CT path (uses config if None)
+            gt_mask_path: Ground truth mask path (uses config if None)
             gt_ct_path: Path to ground truth CT
             gt_mask_path: Path to ground truth mask
             max_steps: Maximum episode steps
@@ -68,10 +80,18 @@ class PyBulletFractureEnv(gym.Env):
         """
         super().__init__()
         
-        self.subject = subject
-        self.fragment_dir = Path(fragment_dir)
-        self.gt_ct_path = Path(gt_ct_path)
-        self.gt_mask_path = Path(gt_mask_path)
+        # Use config defaults if not specified
+        if USE_CONFIG:
+            self.subject = subject or DEFAULT_SUBJECT
+            self.fragment_dir = Path(fragment_dir) if fragment_dir else get_phase3_output_path("pybullet_models/L1_fractured")
+            self.gt_ct_path = Path(gt_ct_path) if gt_ct_path else get_verse_ct_path(self.subject)
+            self.gt_mask_path = Path(gt_mask_path) if gt_mask_path else get_verse_seg_path(self.subject)
+        else:
+            self.subject = subject or "sub-verse563"
+            self.fragment_dir = Path(fragment_dir) if fragment_dir else Path("outputs/phase3_physics_fracture/pybullet_models/L1_fractured")
+            self.gt_ct_path = Path(gt_ct_path) if gt_ct_path else Path("VerSe/dataset-03test/rawdata/sub-verse563/sub-verse563_dir-iso_ct.nii.gz")
+            self.gt_mask_path = Path(gt_mask_path) if gt_mask_path else Path("VerSe/dataset-03test/derivatives/sub-verse563/sub-verse563_dir-iso_seg-vert_msk.nii.gz")
+        
         self.max_steps = max_steps
         self.physics_steps_per_action = physics_steps_per_action
         self.max_force = max_force

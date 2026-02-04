@@ -1,0 +1,73 @@
+{
+  "pred_path": "/gscratch/scrubbed/june0604/vindr/totalseg_eval/predictions/sub-verse046_total",
+  "gt_path": "/gscratch/scrubbed/june0604/vindr/VerSe/dataset-verse19training/derivatives/sub-verse046/sub-verse046_seg-vert_msk.nii.gz",
+  "labels": [
+    20,
+    21,
+    22,
+    23,
+    24
+  ],
+  "pred_labels": [
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25
+  ],
+  "overall": {
+    "mode": "multiclass_pred",
+    "mean_iou": 0.8947571977352041,
+    "mean_dice": 0.94442664887049
+  },
+  "per_label": {
+    "20": {
+      "dice": 0.9467893301292869,
+      "iou": 0.8989553156044704
+    },
+    "21": {
+      "dice": 0.9464918277308952,
+      "iou": 0.8984190656009745
+    },
+    "22": {
+      "dice": 0.9515515250203231,
+      "iou": 0.9075806276894225
+    },
+    "23": {
+      "dice": 0.9423154646003911,
+      "iou": 0.8909229860738902
+    },
+    "24": {
+      "dice": 0.934985096871554,
+      "iou": 0.8779079937072622
+    }
+  },
+  "structural": {
+    "available": true,
+    "axis": 1,
+    "gt_order": [
+      20,
+      21,
+      22,
+      23,
+      24
+    ],
+    "pred_order": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "nvc": 1.0,
+    "soed": 0.6,
+    "vla": 1.0,
+    "vla_iou_threshold": 0.1
+  }
+}
