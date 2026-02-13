@@ -1,0 +1,78 @@
+{
+  "hu": {
+    "Scoliosis": {
+      "bone_mean": 446.0,
+      "bone_std": 319.1,
+      "soft_mean": 16.8,
+      "metal_vox": 99,
+      "metal_mean": 2849.4,
+      "range": [
+        -1024,
+        3066
+      ]
+    },
+    "Hardware": {
+      "bone_mean": 0,
+      "bone_std": 0,
+      "soft_mean": 0.0,
+      "metal_vox": 0,
+      "metal_mean": 0,
+      "range": [
+        0,
+        1
+      ]
+    },
+    "Artifacts": {
+      "bone_mean": 502.6,
+      "bone_std": 497.1,
+      "soft_mean": 16.8,
+      "metal_vox": 1049,
+      "metal_mean": 3071.8,
+      "range": [
+        -1000,
+        3095
+      ]
+    },
+    "Post-Op": {
+      "bone_mean": 446.4,
+      "bone_std": 318.8,
+      "soft_mean": 16.8,
+      "metal_vox": 99,
+      "metal_mean": 2849.4,
+      "range": [
+        -1024,
+        3066
+      ]
+    },
+    "Causal": {
+      "bone_mean": 446.3,
+      "bone_std": 319.0,
+      "soft_mean": 15.6,
+      "metal_vox": 99,
+      "metal_mean": 2849.4,
+      "range": [
+        -1024,
+        3066
+      ]
+    }
+  },
+  "hardware": {
+    "pct_near_bone": 0.0,
+    "valid": "False"
+  },
+  "postop_artifacts": {
+    "bright_streaks": 109315,
+    "dark_streaks": 303096,
+    "both": true
+  },
+  "scoliosis": {
+    "cobb20": 229.3,
+    "cobb40": 229.2,
+    "cobb60": 249.0
+  },
+  "tumors": {
+    "lytic": 227,
+    "blastic": 20,
+    "best_z": 900
+  }
+}

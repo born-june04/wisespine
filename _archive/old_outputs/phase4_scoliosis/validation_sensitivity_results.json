@@ -1,0 +1,61 @@
+{
+  "cobb_vs_disc": {
+    "parameters": [
+      20,
+      40,
+      60
+    ],
+    "values": [
+      20.4,
+      21.1,
+      20.7
+    ],
+    "monotonic": false,
+    "expected": "Higher Cobb \u2192 Lower disc HU (more degeneration)"
+  },
+  "halo_width_vs_volume": {
+    "parameters": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "voxel_counts": [
+      90320,
+      192679,
+      306950,
+      432917,
+      570145
+    ],
+    "mean_hus": [
+      156.2,
+      155.3,
+      154.2,
+      152.5,
+      150.8
+    ],
+    "monotonic": true,
+    "expected": "Wider halo \u2192 More affected voxels (monotonic increase)"
+  },
+  "hematoma_hu_vs_contrast": {
+    "parameters": [
+      20,
+      30,
+      40,
+      50,
+      60,
+      70
+    ],
+    "contrasts": [
+      380,
+      370,
+      360,
+      350,
+      340,
+      330
+    ],
+    "monotonic": true,
+    "expected": "Higher hematoma HU \u2192 Lower contrast with bone (monotonic decrease)"
+  }
+}

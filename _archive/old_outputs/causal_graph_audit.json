@@ -1,0 +1,251 @@
+{
+  "nodes": {
+    "healthy_ct": {
+      "name": "Healthy CT Volume",
+      "physics_engine": "N/A (Ground Truth)",
+      "physics_basis": "Real CT acquisition physics (X-ray attenuation)",
+      "is_physics_based": true,
+      "script": "(input data)"
+    },
+    "scoliosis": {
+      "name": "Scoliosis Deformation",
+      "physics_engine": "Piecewise Rigid Body + IDW Interpolation",
+      "physics_basis": "Biomechanics: Vertebrae are rigid bodies connected by flexible discs. Deformation follows coupled lateral-flexion + axial-rotation (Nash-Moe). Soft tissue interpolated via Inverse Distance Weighting from nearest rigid transforms.",
+      "is_physics_based": true,
+      "script": "spine_deformation.py + simulate_scoliosis.py"
+    },
+    "fracture": {
+      "name": "Vertebral Fracture",
+      "physics_engine": "PyBullet (Rigid Body Dynamics)",
+      "physics_basis": "Newtonian Mechanics: Fragment meshes loaded into PyBullet. Forces applied \u2192 Bullet computes collision, gravity, friction. Fragment positions/orientations used to warp CT via displacement fields. AO classification maps to force patterns (axial=A1, shear=A2, burst=A3/A4).",
+      "is_physics_based": true,
+      "script": "pybullet_fracture_env.py + render_fractured_ct.py"
+    },
+    "tumor": {
+      "name": "Pathological Texture (Tumor)",
+      "physics_engine": "Density Field Modification (Radiological Physics)",
+      "physics_basis": "Radiological Physics: Osteolysis reduces bone mineral density \u2192 lower HU. Osteosclerosis adds disorganized woven bone \u2192 higher HU. Partial Volume Effect at margins (mixed voxels). Perlin noise distortion mimics irregular biological infiltration.",
+      "is_physics_based": true,
+      "script": "tumor_synthesis.py + simulate_tumors.py"
+    },
+    "hardware_placement": {
+      "name": "Pedicle Screw Placement",
+      "physics_engine": "Euclidean Distance Transform + PCA (Constraint Satisfaction)",
+      "physics_basis": "Biomechanical Constraint: Screw must follow the medial axis of the pedicle (Pedicle Isthmus technique) to maximize bone purchase and avoid breach. EDT computes distance-to-cortex field; PCA on the ridge gives optimal trajectory. This is a constraint-satisfaction problem, not heuristic placement.",
+      "is_physics_based": true,
+      "script": "place_hardware_physics.py"
+    },
+    "metal_artifacts": {
+      "name": "CT Metal Artifact Simulation",
+      "physics_engine": "Gaussian Point Spread Function (CT Physics)",
+      "physics_basis": "CT Imaging Physics: High-Z materials (Titanium) cause photon starvation and beam hardening in the X-ray beam. This manifests as: (1) Blooming: Gaussian PSF convolution (\u03c3=1.5) simulates scatter. (2) High HU: Metal attenuation >> bone (~3000 HU). Simplified from full Radon-domain simulation for efficiency.",
+      "is_physics_based": true,
+      "script": "synthesize_artifacts_simple.py"
+    },
+    "laminectomy": {
+      "name": "Laminectomy & Bone Grafting",
+      "physics_engine": "Morphological Operations (Surgical Simulation)",
+      "physics_basis": "Surgical Physics: Laminectomy removes posterior elements (lamina/spinous process) to access the spinal canal. Modeled as density reduction in a posterior column. Bone graft chips (500-800 HU) fill the decorticated fusion bed. Air pockets (-950 HU) simulate trapped gas during retraction.",
+      "is_physics_based": true,
+      "script": "simulate_surgery_process.py"
+    },
+    "hematoma": {
+      "name": "Postoperative Hematoma",
+      "physics_engine": "Fluid Dynamics (Hydrostatics)",
+      "physics_basis": "Nature abhors a vacuum: Laminectomy creates dead space \u2192 blood/serum fills the cavity. Density ~50 HU (acute hematoma). Detected by diff-masking Pre-Op vs Post-Op bone loss zones.",
+      "is_physics_based": true,
+      "script": "simulate_causal_response.py (chunk 1)"
+    },
+    "muscle_edema": {
+      "name": "Muscle Edema (Retraction Injury)",
+      "physics_engine": "Tissue Biomechanics (Inflammatory Response)",
+      "physics_basis": "Mechanical trauma from retractors \u2192 capillary leak \u2192 interstitial fluid accumulation \u2192 density drop (-20 HU) and volume expansion. Targeted to paraspinal muscle bands lateral to hardware.",
+      "is_physics_based": true,
+      "script": "simulate_causal_response.py (chunk 2)"
+    },
+    "screw_halo": {
+      "name": "Periprosthetic Halo (Loosening)",
+      "physics_engine": "Mechanical Stress (Wolff's Law Inverse)",
+      "physics_basis": "Cyclic loading at bone-screw interface \u2192 micro-motion \u2192 fibrous tissue formation (instead of osseointegration). Manifests as 1-voxel lucent rim (~60 HU) around screws. Inverse of Wolff's Law: stress shielding causes bone resorption.",
+      "is_physics_based": true,
+      "script": "simulate_causal_response.py (chunk 3)"
+    },
+    "disc_degeneration": {
+      "name": "Disc Degeneration",
+      "physics_engine": "Biomechanical Loading (Pfirrmann Classification)",
+      "physics_basis": "Asymmetric axial load from scoliosis \u2192 nucleus pulposus dehydration \u2192 HU decrease (80\u219235 HU). Graded I-V by Pfirrmann classification. Concave side experiences greater compression \u2192 worse degeneration.",
+      "is_physics_based": true,
+      "script": "simulate_disc_degeneration.py"
+    },
+    "ligament_response": {
+      "name": "Ligament Response (PLC Disruption)",
+      "physics_engine": "Surgical Biomechanics (Tissue Disruption)",
+      "physics_basis": "Laminectomy requires cutting through ISL/SSL \u2192 PLC disruption. ALL preserved (anterior). LF partially removed for decompression. Density changes: disrupted ligament \u2192 air/fluid (-50 HU).",
+      "is_physics_based": true,
+      "script": "simulate_ligament_response.py"
+    },
+    "temporal_evolution": {
+      "name": "Temporal Evolution (Day 0\u2192365)",
+      "physics_engine": "Time-Dependent Biomechanics",
+      "physics_basis": "Hematoma: Acute\u2192Subacute\u2192Chronic (50\u219230\u21920 HU, hemoglobin degradation). Graft: Chips\u2192Callus\u2192Fusion (creeping substitution). Halo: Progressive widening (fibrous tissue growth). Edema: Resolution over 90 days (inflammatory cascade).",
+      "is_physics_based": true,
+      "script": "simulate_temporal_evolution.py"
+    },
+    "canal_compromise": {
+      "name": "Spinal Canal Compromise",
+      "physics_engine": "Geometric Analysis (Cross-Section Measurement)",
+      "physics_basis": "Canal area = filled holes in bone ring minus bone. Stenosis % = (1 - Area_post/Area_pre) \u00d7 100. Burst fracture/tumor \u2192 retropulsion/mass effect \u2192 area reduction.",
+      "is_physics_based": true,
+      "script": "simulate_canal_compromise.py"
+    },
+    "segmentation_impact": {
+      "name": "Segmentation Impact (Layer 5)",
+      "physics_engine": "Signal Detection Theory (CNR/Edge Analysis)",
+      "physics_basis": "CNR = |\u03bc_bone - \u03bc_soft| / \u03c3_soft. Lower CNR \u2192 harder segmentation. Edge sharpness via Sobel gradient. Boundary integrity via HU jump. Proxy for Dice score without running TotalSegmentator.",
+      "is_physics_based": true,
+      "script": "simulate_segmentation_impact.py"
+    },
+    "quantitative_validation": {
+      "name": "Quantitative Validation (KS-Test)",
+      "physics_engine": "Statistical Mechanics (Distribution Comparison)",
+      "physics_basis": "KS-test compares observed HU distributions vs. literature reference. Per-tissue analysis: cortical, cancellous, soft tissue, fat, metal. QQ plots for visual distribution comparison.",
+      "is_physics_based": true,
+      "script": "validate_biomechanics.py"
+    }
+  },
+  "edges": [
+    {
+      "source": "healthy_ct",
+      "target": "scoliosis",
+      "relationship": "Spine develops curvature",
+      "physics_justification": "Biomechanics: Asymmetric growth \u2192 lateral deviation \u2192 coupled rotation"
+    },
+    {
+      "source": "healthy_ct",
+      "target": "fracture",
+      "relationship": "Vertebra sustains trauma",
+      "physics_justification": "Newtonian: External force exceeds bone failure strength"
+    },
+    {
+      "source": "healthy_ct",
+      "target": "tumor",
+      "relationship": "Metastatic seeding occurs",
+      "physics_justification": "Cell Biology: Tumor cells colonize vertebral marrow \u2192 modify bone density"
+    },
+    {
+      "source": "scoliosis",
+      "target": "disc_degeneration",
+      "relationship": "Asymmetric loading degenerates discs",
+      "physics_justification": "Biomechanics: Lateral deviation \u2192 uneven axial stress \u2192 disc dehydration"
+    },
+    {
+      "source": "scoliosis",
+      "target": "hardware_placement",
+      "relationship": "Deformity requires surgical correction",
+      "physics_justification": "Clinical: Cobb > 40\u00b0 \u2192 Posterior spinal fusion indicated"
+    },
+    {
+      "source": "hardware_placement",
+      "target": "metal_artifacts",
+      "relationship": "Metal in X-ray beam causes artifacts",
+      "physics_justification": "CT Physics: High-Z material \u2192 photon starvation \u2192 blooming"
+    },
+    {
+      "source": "hardware_placement",
+      "target": "laminectomy",
+      "relationship": "Surgeon must access spine to place hardware",
+      "physics_justification": "Surgical: Posterior approach requires lamina removal for canal access"
+    },
+    {
+      "source": "laminectomy",
+      "target": "ligament_response",
+      "relationship": "Laminectomy disrupts posterior ligament complex",
+      "physics_justification": "Surgical: Cutting through ISL/SSL required for posterior access"
+    },
+    {
+      "source": "laminectomy",
+      "target": "hematoma",
+      "relationship": "Bone removal creates dead space \u2192 fills with fluid",
+      "physics_justification": "Hydrostatics: Vacuum \u2192 fluid equilibrium (Pascal's principle)"
+    },
+    {
+      "source": "laminectomy",
+      "target": "muscle_edema",
+      "relationship": "Surgical retraction injures paraspinal muscles",
+      "physics_justification": "Inflammation: Mechanical trauma \u2192 capillary leak \u2192 edema"
+    },
+    {
+      "source": "hardware_placement",
+      "target": "screw_halo",
+      "relationship": "Screws toggle under cyclic loading",
+      "physics_justification": "Mechanical: Stress concentration \u2192 fibrous encapsulation (Wolff's inverse)"
+    },
+    {
+      "source": "hematoma",
+      "target": "temporal_evolution",
+      "relationship": "Hematoma evolves over time (Acute\u2192Chronic)",
+      "physics_justification": "Hemoglobin degradation: Oxy\u2192Deoxy\u2192Met\u2192Hemosiderin"
+    },
+    {
+      "source": "laminectomy",
+      "target": "canal_compromise",
+      "relationship": "Surgery alters canal geometry",
+      "physics_justification": "Geometric: Bone removal changes canal cross-section"
+    },
+    {
+      "source": "tumor",
+      "target": "fracture",
+      "relationship": "Pathological fracture through weakened bone",
+      "physics_justification": "Material Science: Lytic lesion reduces bone strength \u2192 fracture at lower force"
+    },
+    {
+      "source": "scoliosis",
+      "target": "tumor",
+      "relationship": "Stress concentration attracts metastasis",
+      "physics_justification": "Biomechanics: Asymmetric load \u2192 altered vascularity \u2192 preferential seeding"
+    },
+    {
+      "source": "fracture",
+      "target": "hardware_placement",
+      "relationship": "Fracture requires internal fixation",
+      "physics_justification": "Orthopedic: Unstable fracture (AO B/C) \u2192 surgical stabilization"
+    },
+    {
+      "source": "metal_artifacts",
+      "target": "segmentation_impact",
+      "relationship": "Artifacts degrade AI segmentation",
+      "physics_justification": "Signal Theory: Reduced CNR \u2192 boundary confusion \u2192 lower Dice"
+    },
+    {
+      "source": "hematoma",
+      "target": "segmentation_impact",
+      "relationship": "Post-op changes confuse segmentation",
+      "physics_justification": "Signal Theory: Novel densities near boundaries \u2192 confusion"
+    },
+    {
+      "source": "screw_halo",
+      "target": "segmentation_impact",
+      "relationship": "Halos blur bone-implant boundary",
+      "physics_justification": "Signal Theory: Lucent rim reduces bone-metal contrast"
+    }
+  ],
+  "execution_order": [
+    "healthy_ct",
+    "quantitative_validation",
+    "scoliosis",
+    "disc_degeneration",
+    "tumor",
+    "fracture",
+    "hardware_placement",
+    "metal_artifacts",
+    "laminectomy",
+    "screw_halo",
+    "ligament_response",
+    "hematoma",
+    "muscle_edema",
+    "canal_compromise",
+    "temporal_evolution",
+    "segmentation_impact"
+  ],
+  "audit_pass": true
+}

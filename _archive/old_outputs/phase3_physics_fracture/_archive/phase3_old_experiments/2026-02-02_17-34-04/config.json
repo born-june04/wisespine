@@ -1,0 +1,11 @@
+{
+  "subject": "sub-verse563",
+  "total_timesteps": 50000,
+  "max_steps_per_episode": 50,
+  "max_force": 0.0002,
+  "max_torque": 2e-05,
+  "learning_rate": 0.0003,
+  "n_steps": 2048,
+  "batch_size": 64,
+  "timestamp": "2026-02-02T17:34:34.805318"
+}

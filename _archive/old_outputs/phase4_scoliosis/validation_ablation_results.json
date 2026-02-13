@@ -1,0 +1,50 @@
+{
+  "Scoliosis": {
+    "CNR": 4.439,
+    "delta_CNR": 0,
+    "Edge_Sharpness": 594.06,
+    "delta_Edge": 0,
+    "HU_Mean": 443.7,
+    "essential": false
+  },
+  "Hardware": {
+    "CNR": 0.108,
+    "delta_CNR": -4.331,
+    "Edge_Sharpness": 0.0,
+    "delta_Edge": -594.06,
+    "HU_Mean": 0,
+    "essential": true
+  },
+  "Tumors": {
+    "CNR": 4.438,
+    "delta_CNR": 4.33,
+    "Edge_Sharpness": 594.06,
+    "delta_Edge": 594.06,
+    "HU_Mean": 443.7,
+    "essential": true
+  },
+  "Artifacts": {
+    "CNR": 3.31,
+    "delta_CNR": -1.128,
+    "Edge_Sharpness": 591.3,
+    "delta_Edge": -2.76,
+    "HU_Mean": 461.3,
+    "essential": true
+  },
+  "Post-Op": {
+    "CNR": 4.406,
+    "delta_CNR": 1.096,
+    "Edge_Sharpness": 594.06,
+    "delta_Edge": 2.76,
+    "HU_Mean": 443.5,
+    "essential": true
+  },
+  "Causal": {
+    "CNR": 4.415,
+    "delta_CNR": 0.009,
+    "Edge_Sharpness": 593.37,
+    "delta_Edge": -0.69,
+    "HU_Mean": 443.4,
+    "essential": true
+  }
+}

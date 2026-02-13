@@ -1,0 +1,178 @@
+{
+  "subject": "sub-verse563",
+  "seed": 0,
+  "sweep": {
+    "ops": [
+      "erode",
+      "dilate"
+    ],
+    "radii": [
+      1,
+      2
+    ],
+    "p_apply": [
+      0.25,
+      0.5,
+      0.75
+    ]
+  },
+  "max_runs": 0,
+  "rows": [
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "erode",
+      "radius": 1,
+      "p_apply": 0.25,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8918777906252903,
+      "corrupt_mean_iou": 0.8073987828777878,
+      "delta_mean_dice": -0.013805503354324733,
+      "delta_mean_iou": -0.022224757896654013
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "erode",
+      "radius": 1,
+      "p_apply": 0.5,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8864628719119251,
+      "corrupt_mean_iou": 0.7985175074010388,
+      "delta_mean_dice": -0.019220422067689924,
+      "delta_mean_iou": -0.031106033373403008
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "erode",
+      "radius": 1,
+      "p_apply": 0.75,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8708318776333199,
+      "corrupt_mean_iou": 0.774265067934902,
+      "delta_mean_dice": -0.03485141634629507,
+      "delta_mean_iou": -0.05535847283953976
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "erode",
+      "radius": 2,
+      "p_apply": 0.25,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8598566009895162,
+      "corrupt_mean_iou": 0.7622591756556214,
+      "delta_mean_dice": -0.04582669299009878,
+      "delta_mean_iou": -0.06736436511882038
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "erode",
+      "radius": 2,
+      "p_apply": 0.5,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8422533642509203,
+      "corrupt_mean_iou": 0.735548095356542,
+      "delta_mean_dice": -0.06342992972869466,
+      "delta_mean_iou": -0.0940754454178998
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "erode",
+      "radius": 2,
+      "p_apply": 0.75,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.7944978154203087,
+      "corrupt_mean_iou": 0.6671622566673052,
+      "delta_mean_dice": -0.11118547855930627,
+      "delta_mean_iou": -0.16246128410713656
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "dilate",
+      "radius": 1,
+      "p_apply": 0.25,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8937923812277253,
+      "corrupt_mean_iou": 0.8105316841883188,
+      "delta_mean_dice": -0.011890912751889693,
+      "delta_mean_iou": -0.019091856586123
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "dilate",
+      "radius": 1,
+      "p_apply": 0.5,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8894710671560818,
+      "corrupt_mean_iou": 0.8034091086047738,
+      "delta_mean_dice": -0.016212226823533182,
+      "delta_mean_iou": -0.02621443216966801
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "dilate",
+      "radius": 1,
+      "p_apply": 0.75,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8789829641650257,
+      "corrupt_mean_iou": 0.7864416387769159,
+      "delta_mean_dice": -0.026700329814589252,
+      "delta_mean_iou": -0.04318190199752592
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "dilate",
+      "radius": 2,
+      "p_apply": 0.25,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8719483320766449,
+      "corrupt_mean_iou": 0.7782056131099593,
+      "delta_mean_dice": -0.033734961902970095,
+      "delta_mean_iou": -0.0514179276644825
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "dilate",
+      "radius": 2,
+      "p_apply": 0.5,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8594439924963162,
+      "corrupt_mean_iou": 0.758611500483517,
+      "delta_mean_dice": -0.0462393014832988,
+      "delta_mean_iou": -0.07101204029092478
+    },
+    {
+      "subject": "sub-verse563",
+      "seed": 0,
+      "op": "dilate",
+      "radius": 2,
+      "p_apply": 0.75,
+      "clean_mean_dice": 0.905683293979615,
+      "clean_mean_iou": 0.8296235407744418,
+      "corrupt_mean_dice": 0.8294281169352524,
+      "corrupt_mean_iou": 0.71278268339351,
+      "delta_mean_dice": -0.07625517704436258,
+      "delta_mean_iou": -0.11684085738093175
+    }
+  ]
+}

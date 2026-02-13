@@ -1,0 +1,47 @@
+{
+  "Cortical Bone": {
+    "ks_statistic": 0.5899,
+    "p_value": 0.0,
+    "observed_mean": 697.4,
+    "observed_std": 308.7,
+    "literature_mean": 1000,
+    "literature_std": 200,
+    "match": "POOR"
+  },
+  "Cancellous Bone": {
+    "ks_statistic": 0.4113,
+    "p_value": 0.0,
+    "observed_mean": 190.3,
+    "observed_std": 78.3,
+    "literature_mean": 250,
+    "literature_std": 80,
+    "match": "POOR"
+  },
+  "Soft Tissue (Muscle)": {
+    "ks_statistic": 0.2493,
+    "p_value": 0.0,
+    "observed_mean": 55.3,
+    "observed_std": 22.6,
+    "literature_mean": 50,
+    "literature_std": 15,
+    "match": "FAIR"
+  },
+  "Fat": {
+    "ks_statistic": 0.2423,
+    "p_value": 0.0,
+    "observed_mean": -92.1,
+    "observed_std": 31.0,
+    "literature_mean": -90,
+    "literature_std": 20,
+    "match": "FAIR"
+  },
+  "Metal (Titanium)": {
+    "ks_statistic": 0.4267,
+    "p_value": 0.0,
+    "observed_mean": 2645.3,
+    "observed_std": 351.9,
+    "literature_mean": 3000,
+    "literature_std": 200,
+    "match": "POOR"
+  }
+}

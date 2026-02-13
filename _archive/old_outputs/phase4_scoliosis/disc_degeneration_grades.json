@@ -1,0 +1,23 @@
+[
+  {
+    "disc_index": 1,
+    "z_level": 136,
+    "grade": 1,
+    "grade_label": "Grade I (Normal)",
+    "target_hu": 80
+  },
+  {
+    "disc_index": 2,
+    "z_level": 159,
+    "grade": 4,
+    "grade_label": "Grade IV (Severe)",
+    "target_hu": 40
+  },
+  {
+    "disc_index": 3,
+    "z_level": 195,
+    "grade": 1,
+    "grade_label": "Grade I (Normal)",
+    "target_hu": 80
+  }
+]

@@ -1,0 +1,4 @@
+{"timestep": 50, "episode_reward": -1.8888808488845825, "episode_length": 50}
+{"timestep": 100, "episode_reward": -1.940767526626587, "episode_length": 50}
+{"timestep": 150, "episode_reward": -1.6135003566741943, "episode_length": 50}
+{"timestep": 200, "episode_reward": -1.611952543258667, "episode_length": 50}

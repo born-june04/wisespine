@@ -1,0 +1,25 @@
+{
+  "total_samples": 3,
+  "successful": 0,
+  "failed": 3,
+  "results": [
+    {
+      "sample_name": "sample_000_seed42",
+      "ct_path": "spine-rl-sim/ablation_outputs/2026-01-28/phase1_proxy_abnormal/sub-verse563/sample_000_seed42/sub-verse563_proxy_abnormal_ct.nii.gz",
+      "status": "failed",
+      "error": "TotalSeg failed for spine-rl-sim/ablation_outputs/2026-01-28/phase1_proxy_abnormal/sub-verse563/sample_000_seed42/sub-verse563_proxy_abnormal_ct.nii.gz"
+    },
+    {
+      "sample_name": "sample_001_seed43",
+      "ct_path": "spine-rl-sim/ablation_outputs/2026-01-28/phase1_proxy_abnormal/sub-verse563/sample_001_seed43/sub-verse563_proxy_abnormal_ct.nii.gz",
+      "status": "failed",
+      "error": "TotalSeg failed for spine-rl-sim/ablation_outputs/2026-01-28/phase1_proxy_abnormal/sub-verse563/sample_001_seed43/sub-verse563_proxy_abnormal_ct.nii.gz"
+    },
+    {
+      "sample_name": "sample_002_seed44",
+      "ct_path": "spine-rl-sim/ablation_outputs/2026-01-28/phase1_proxy_abnormal/sub-verse563/sample_002_seed44/sub-verse563_proxy_abnormal_ct.nii.gz",
+      "status": "failed",
+      "error": "TotalSeg failed for spine-rl-sim/ablation_outputs/2026-01-28/phase1_proxy_abnormal/sub-verse563/sample_002_seed44/sub-verse563_proxy_abnormal_ct.nii.gz"
+    }
+  ]
+}

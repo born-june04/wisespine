@@ -145,7 +145,7 @@ displacement_voxels = displacement_mm / spacing  # mm → voxels
 
 **Visualization**:
 
-![Fractured CT Comparison](./outputs/phase3_physics_fracture/visualizations/fractured_ct_comparison.png)
+![Fractured CT Comparison](../_archive/old_outputs/phase3_physics_fracture/visualizations/fractured_ct_comparison.png)
 
 *Figure 1: PyBullet fracture simulation result. Left: Original, Right: Fractured*
 
@@ -263,7 +263,7 @@ We validated our synthetic textures against real CT using three metrics:
 | **Anisotropy Ratio** | 0.59 ± 0.22 | 0.76 ± 0.21 | ⚠️ 28% gap |
 | **Power Spectrum Peak** | k=6 | k=6 | ✅ Match |
 
-![Statistical Validation](./outputs/validation_analysis/statistical_validation.png)
+![Statistical Validation](../_archive/old_outputs/validation_analysis/statistical_validation.png)
 
 *Figure: Statistical realism validation showing 3D consistency, structure tensor anisotropy, and power spectrum comparison.*
 
@@ -287,51 +287,54 @@ def simulate_burst_retropulsion(ct, mask, severity=0.5):
     """
 ```
 
-##### 3.5.1 AO Fracture Type Classification & Visualization (NEW)
+##### 3.5.1 AO Fracture Type Classification & Visualization
 
-We have successfully simulated and rendered specific AO fracture types with distinct morphological features.
+We have simulated all four AO Type A fracture subtypes with physics-based deformation models applied to real VerSe CT data. Each simulation is validated against the biomechanical mechanism described in the AO Spine classification (Magerl 1994, Vaccaro 2013).
 
-**1. AO Type A1: Wedge Compression**
-- **Mechanism**: Compression failure of the anterior column.
-- **Features**: Anterior height loss, preserved posterior wall.
-- **Simulation**: Gradient compression force applied anteriorly.
+| AO Type | Mechanism | Simulation Approach | Physics Validation |
+|---------|-----------|--------------------|--------------------|
+| **A1: Wedge** | Flexion + compression | `compression ∝ anterior_distance` | Gradient deformation preserves posterior wall (Denis 1983) |
+| **A2: Split** | Pure axial | Bilateral separation + coronal fracture line | Symmetric split from axial load, no flexion gradient |
+| **A3: Inc. Burst** | High axial | Uniform compression + limited posterior wall fracture | Canal <25%, Poisson expansion (Panjabi 1995) |
+| **A4: Comp. Burst** | Explosive axial | `simulate_burst_retropulsion()` | Retropulsion >25% canal, multi-fragment (Wilcox 2003) |
 
-![AO Type A1](./outputs/ao_fracture_types/AO_Type_A1.png)
+**Summary — All 4 Types (Axial + Sagittal, with fracture annotations):**
 
-**2. AO Type A2: Split Fracture**
-- **Mechanism**: Axial loading with coronal plane failure.
-- **Features**: Fracture line traversing both endplates, often with separation.
-- **Simulation**: Vertical splitting force with lateral displacement.
+![AO Classification Summary](./fracture_reports/figures/AO_all_types_summary.png)
 
-![AO Type A2](./outputs/ao_fracture_types/AO_Type_A2.png)
+*Figure: All AO Type A1-A4 fractures with red fracture location overlay. Top row: axial views, Bottom row: sagittal views.*
 
-**3. AO Type A3: Incomplete Burst**
-- **Mechanism**: Axial compression with partial posterior wall involvement.
-- **Features**: Posterior wall fracture but minimal retropulsion/canal compromise.
-- **Simulation**: High axial load centered on the vertebral body.
+**Individual Detailed Reports** (each includes: annotated axial/sagittal views, zoomed fracture region, ΔHU maps, HU histograms, quantitative stats, and physics validation):
 
-![AO Type A3](./outputs/ao_fracture_types/AO_Type_A3.png)
+| Type | Detailed Image | Severity Gallery |
+|------|---------------|-----------------|
+| A1 | ![A1](./fracture_reports/figures/AO_A1_Wedge_Compression.png) | ![A1 sev](./fracture_reports/figures/AO_A1_Wedge_Compression_severity.png) |
+| A2 | ![A2](./fracture_reports/figures/AO_A2_Split_Fracture.png) | ![A2 sev](./fracture_reports/figures/AO_A2_Split_Fracture_severity.png) |
+| A3 | ![A3](./fracture_reports/figures/AO_A3_Incomplete_Burst.png) | ![A3 sev](./fracture_reports/figures/AO_A3_Incomplete_Burst_severity.png) |
+| A4 | ![A4](./fracture_reports/figures/AO_A4_Complete_Burst.png) | ![A4 sev](./fracture_reports/figures/AO_A4_Complete_Burst_severity.png) |
 
-**4. AO Type A4: Complete Burst**
-- **Mechanism**: Severe axial compression with complete posterior wall disruption.
-- **Features**: Retropulsion of bone fragments into the spinal canal (neurologic risk).
-- **Simulation**: Explosive radial force + posterior fragment retropulsion logic.
+> **📁 Detailed Per-Type Reports**: See [fracture_reports/](./fracture_reports/FRACTURE_TYPES_INDEX.md) for individual reports on each AO fracture type (A1-A4), including clinical background, physics-based simulation logic, "Why This is Physically Correct" validation tables, and quantitative analysis.
 
-![AO Type A4](./outputs/ao_fracture_types/AO_Type_A4.png)
+**Severity Progression Animations** (Original → Very Mild → Mild → Moderate → Severe → Very Severe):
 
-**Summary of All Fracture Types**:
+| Type | Animated Progression |
+|------|---------------------|
+| A1 Wedge | ![A1 progression](./fracture_reports/figures/progression_A1_Wedge.gif) |
+| A2 Split | ![A2 progression](./fracture_reports/figures/progression_A2_Split.gif) |
+| A3 Inc. Burst | ![A3 progression](./fracture_reports/figures/progression_A3_Burst.gif) |
+| A4 Comp. Burst | ![A4 progression](./fracture_reports/figures/progression_A4_Burst.gif) |
 
-![AO Classification Summary](./outputs/ao_fracture_types/AO_all_types_summary.png)
+*Animated GIFs: Red overlay highlights regions changed from original. Each frame steps through severity levels (0.15 → 0.9).*
 
-*Figure: Comparative visualization of AO Type A1-A4 fractures generated by our physics-based pipeline.*
+**CT Physics Simulation Effects**:
 
-**Fracture Gallery (Morphological Diversity)**:
+![CT Physics Effects](./fracture_reports/figures/ct_physics_effects.png)
 
-![Fracture Gallery](./outputs/fracture_gallery/fracture_type_gallery.png)
+*Comparison of CT physics effects: Original → Trabecular Texture → Partial Volume → Normal Dose Noise → Low Dose (¼) Noise. Both sagittal and axial views.*
 
-*Figure: Gallery showing different severities (mild to severe) for Compression, Wedge, and Burst fractures.*
+![Dose Sweep Animation](./fracture_reports/figures/dose_sweep.gif)
 
-
+*Animated dose sweep from full dose to ¼ dose, showing progressive noise increase.*
 
 #### Implementation Files
 
@@ -397,19 +400,19 @@ Training time: ~2 hours
 
 **Learning Curve**:
 
-![Training Progress](./outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/training_progress.png)
+![Training Progress](../_archive/old_outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/training_progress.png)
 
 *Figure 2: RL training progress. Mean reward gradually increases (Dice decreases)*
 
 **Validation Samples**:
 
-![RL Result Step 10k](./outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_010000/comparison.png)
+![RL Result Step 10k](../_archive/old_outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_010000/comparison.png)
 *Step 10,000*
 
-![RL Result Step 30k](./outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_030000/comparison.png)
+![RL Result Step 30k](../_archive/old_outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_030000/comparison.png)
 *Step 30,000*
 
-![RL Result Step 50k](./outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_050000/comparison.png)
+![RL Result Step 50k](../_archive/old_outputs/phase3_physics_fracture/rl_training/2026-02-02_18-30-42/validation/step_050000/comparison.png)
 *Step 50,000 (Final)*
 
 ### 3.3 Phase 3 Quantitative Results
@@ -431,7 +434,7 @@ Training time: ~2 hours
 
 **Visual Comparison**:
 
-![Summary Report](./outputs/phase3_physics_fracture/visualizations/SUMMARY_REPORT.png)
+![Summary Report](../_archive/old_outputs/phase3_physics_fracture/visualizations/SUMMARY_REPORT.png)
 
 *Figure 3: Phase 3 comprehensive comparison. Fragment separation visible but distant from actual clinical images*
 
@@ -557,7 +560,7 @@ ct_with_screws[screw_mask > 0] = 20000  # Typical metal HU
 
 **Visualization**:
 
-![Screw Placement](./outputs/phase4_surgical_artifacts/screw_placement_test.png)
+![Screw Placement](../_archive/old_outputs/phase4_surgical_artifacts/screw_placement_test.png)
 
 *Figure 4: Pedicle screw placement. Red contour: L1 vertebra, White bright spots: screws*
 
@@ -602,7 +605,7 @@ corruption_radius = 10 mm
 
 **Visualization**:
 
-![Screw with Artifacts](./outputs/phase4_surgical_artifacts/screw_visualization_with_artifacts.png)
+![Screw with Artifacts](../_archive/old_outputs/phase4_surgical_artifacts/screw_visualization_with_artifacts.png)
 
 *Figure 5: After adding metal artifacts. Screws shine brightly, streak artifacts visible*
 
@@ -662,7 +665,7 @@ def find_matching_vertebra(gt_mask, ts_predictions):
 num_voxels = 10,265
 ```
 
-![Config 1](./outputs/phase4_surgical_artifacts/configurations/config1_L1_screws_only.png)
+![Config 1](../_archive/old_outputs/phase4_surgical_artifacts/configurations/config1_L1_screws_only.png)
 
 #### Config 2: L1 Screws + Rod
 ```python
@@ -670,7 +673,7 @@ num_voxels = 10,265
 num_voxels = 14,484 (+41%)
 ```
 
-![Config 2](./outputs/phase4_surgical_artifacts/configurations/config2_L1_screws_rod.png)
+![Config 2](../_archive/old_outputs/phase4_surgical_artifacts/configurations/config2_L1_screws_rod.png)
 
 #### Config 3: Multi-level (L1+L2) Screws + Rods
 ```python
@@ -678,7 +681,7 @@ num_voxels = 14,484 (+41%)
 num_voxels = 33,280 (+224%)
 ```
 
-![Config 3](./outputs/phase4_surgical_artifacts/configurations/config3_multi_level.png)
+![Config 3](../_archive/old_outputs/phase4_surgical_artifacts/configurations/config3_multi_level.png)
 
 **Actual Results** ✅:
 
@@ -693,7 +696,7 @@ num_voxels = 33,280 (+224%)
 
 **Comprehensive Comparison Visualization**:
 
-![Configuration Comparison](./outputs/phase4_surgical_artifacts/evaluation_moderate/COMPARISON_PLOT.png)
+![Configuration Comparison](../_archive/old_outputs/phase4_surgical_artifacts/evaluation_moderate/COMPARISON_PLOT.png)
 
 *Figure 6: Comparison of 3 surgical configurations. Config 2 (Screws + Rod) most effective (17.28% degradation on L2)*
 
@@ -880,13 +883,25 @@ To ensure physical realism, we validated the screw placement against the **clini
     -   The screw trajectory was constrained to lie exactly on this ridge, maximizing the distance to the cortical wall on all sides.
     -   This mathematically guarantees the safest, most biomechanically stable trajectory, replicating an expert surgeon's tactile placement.
  
-*(Visualization: `surgical_hardware_sagittal.png` - Showing intramedullary placement)*
+![Surgical Hardware Sagittal](../_archive/old_outputs/phase4_scoliosis/surgical_hardware_sagittal.png)
+
+*Showing intramedullary placement within the pedicle isthmus.*
  
 ### 5.4 Results
  
 We successfully generated artifact volumes for Cobb 60° (most severe deformity) with physically optimized hardware placement. The screws follow the pedicle axis precisely even in deformed states.
 
-*(Visualization: `surgical_hardware_visualization.png`)*
+![Surgical Hardware Visualization](../_archive/old_outputs/phase4_scoliosis/surgical_hardware_visualization.png)
+
+**Enhanced Visualization — Hardware Placement with Metal Artifacts:**
+
+![Hardware & Artifacts](./fracture_reports/figures/hardware_artifacts.png)
+
+*Original → Bilateral Pedicle Screws → With Metal Artifacts → ΔHU map. Sagittal and axial views.*
+
+![Artifact Severity Animation](./fracture_reports/figures/artifact_severity.gif)
+
+*Animated artifact severity sweep showing increasing metal artifact intensity.*
 
 ---
 
@@ -902,7 +917,9 @@ To address the user's request for "Contextual Reasoning" (i.e., "Screws aren't j
     -   High-density "Bone Chips" (500-800 HU) were procedurally added to the posterior fusion bed.
     -   **Air Pockets**: Sparse "Vacuum Phenomenon" (-950 HU) voxels were added to simulate air trapped during retraction.
  
-*(Visualization: `surgery_impact_comparison.png` - Shows Pre-Op vs Post-Op anatomy)*
+![Surgery Impact Comparison](../_archive/old_outputs/phase4_scoliosis/surgery_impact_comparison.png)
+
+*Pre-Op vs Post-Op anatomy showing laminectomy site and bone graft placement.*
  
 ---
  
@@ -932,7 +949,19 @@ We implemented `modules/tumor_synthesis.py` to generate lesions with specific ra
  
 We successfully embedded both lesion types into the Cobb 60° scoliotic spine.
  
-*(Visualization: `tumor_comparison.png` - Showing side-by-side axial views)*
+![Tumor Comparison](../_archive/old_outputs/phase4_scoliosis/tumor_comparison.png)
+
+*Side-by-side axial views of lytic and blastic lesions.*
+
+**Enhanced Tumor Visualization — Size Progression:**
+
+![Tumor Simulation](./fracture_reports/figures/tumor_simulation.png)
+
+*Lytic (top) and Blastic (bottom) lesions at 5mm, 8mm, 12mm, and 16mm radius, with ΔHU difference maps.*
+
+![Tumor Growth Animation](./fracture_reports/figures/tumor_growth.gif)
+
+*Animated tumor growth from 5mm to 16mm radius.*
 
 ---
 
@@ -958,7 +987,9 @@ To address the user's request for "Contextual Reasoning" and causal chains, we m
     -   **Response**: Fibrous tissue formation (Lucent Line).
     -   **Algorithm**: 1-voxel dilation subtraction around screw threads set to soft-tissue density.
  
-*(Visualization: `causal_reality_visualization.png` - Depicting Hematoma, Edema, and Halos)*
+![Causal Reality Visualization](../_archive/old_outputs/phase4_scoliosis/causal_reality_visualization.png)
+
+*Depicting Hematoma, Edema, and Periprosthetic Halos.*
  
 ---
  
@@ -1082,7 +1113,7 @@ Connects the simulation pipeline to its **original purpose**: evaluating AI segm
  
 **Key Finding**: Metal hardware causes the largest CNR degradation (**-19%**), confirming it as the primary segmentation challenge.
  
-*(Visualization: `segmentation_impact_analysis.png`)*
+![Segmentation Impact Analysis](../_archive/old_outputs/phase4_scoliosis/segmentation_impact_analysis.png)
  
 ### 9.2 E2: Temporal Dynamics (Day 0 → 365)
  
@@ -1098,7 +1129,9 @@ Added a **time axis** to the causal response simulation across 5 timepoints:
  
 **Physics**: Hemoglobin degradation (Oxy→Deoxy→Met→Hemosiderin), creeping substitution for graft maturation, progressive fibrous encapsulation for halo widening.
  
-*(Visualization: `temporal_evolution_timeline.png` — 5×3 montage of Sagittal/Axial/Zoom views)*
+![Temporal Evolution Timeline](../_archive/old_outputs/phase4_scoliosis/temporal_evolution_timeline.png)
+
+*5×3 montage of Sagittal/Axial/Zoom views across Day 0 → Day 365.*
  
 ### 9.3 E3: Cross-Edge Interactions
  
@@ -1121,7 +1154,9 @@ Scoliosis causes **asymmetric disc loading** → disc dehydration:
  
 **Physics**: Nucleus pulposus dehydration leads to HU decrease (80→35 HU), measured by Pfirrmann classification adapted for CT.
  
-*(Visualization: `disc_degeneration_visualization.png` — Sagittal comparison, grade annotations, difference map)*
+![Disc Degeneration Visualization](../_archive/old_outputs/phase4_scoliosis/disc_degeneration_visualization.png)
+
+*Sagittal comparison, grade annotations, difference map.*
  
 ### 9.5 E5: Spinal Canal Compromise
  
@@ -1135,7 +1170,9 @@ Measured canal cross-section area pre/post surgery:
  
 **Physics**: Canal area = filled bone ring minus bone. Stenosis % = (1 - Area_post/Area_pre) × 100.
  
-*(Visualization: `canal_compromise_analysis.png` — Axial overlay with red canal mask + Z-profile)*
+![Canal Compromise Analysis](../_archive/old_outputs/phase4_scoliosis/canal_compromise_analysis.png)
+
+*Axial overlay with red canal mask + Z-profile.*
  
 ### 9.6 E6: Quantitative Validation (KS-Test)
  
@@ -1151,7 +1188,9 @@ Compared synthetic HU distributions against literature reference values:
  
 **Note**: POOR matches for bone are **expected** — surgical modifications (resection, grafting, hematoma) intentionally alter the HU distribution from healthy literature values. This is by design. Soft tissue and fat maintain FAIR matches, confirming anatomical fidelity in non-surgical regions.
  
-*(Visualization: `quantitative_validation.png` — Overlaid histograms with literature curves)*
+![Quantitative Validation](../_archive/old_outputs/phase4_scoliosis/quantitative_validation.png)
+
+*Overlaid histograms with literature curves.*
  
 ### 9.7 E7: Ligament Response
  
@@ -1167,7 +1206,9 @@ Modeled Posterior Ligament Complex (PLC) status after laminectomy:
  
 **Physics**: Laminectomy requires posterior access → ISL/SSL must be cut through → PLC disruption is an unavoidable surgical consequence.
  
-*(Visualization: `ligament_response_visualization.png` — Sagittal annotation of ligament status)*
+![Ligament Response Visualization](../_archive/old_outputs/phase4_scoliosis/ligament_response_visualization.png)
+
+*Sagittal annotation of ligament status.*
  
 ### 9.8 Expanded Causal DAG (16 Nodes, 19 Edges, 6 Layers)
  
@@ -1286,7 +1327,7 @@ Each node was deactivated and its impact on downstream metrics measured:
  
 **Finding**: Hardware (ΔCNR = -4.331) and Artifacts (ΔCNR = -1.128) are the most impactful nodes. Removing any node significantly changes downstream metrics, proving each is essential.
  
-![V2: Ablation Study — Impact of Each Simulation Stage](/gscratch/scrubbed/june0604/wisespine/outputs/phase4_scoliosis/validation_ablation_study.png)
+![V2: Ablation Study — Impact of Each Simulation Stage](../_archive/old_outputs/phase4_scoliosis/validation_ablation_study.png)
  
 ### 10.3 V3: Sensitivity Analysis (Quantitative Evidence)
 
@@ -1300,7 +1341,7 @@ Three parameter sweeps verify **monotonic response**:
  
 **Finding**: Halo width and hematoma parameterizations are **perfectly monotonic**, confirming physical coherence. Cobb→Disc shows weak coupling since disc spaces are globally similar at current resolution.
  
-![V3: Sensitivity Analysis — Parameter Sweep Monotonicity](/gscratch/scrubbed/june0604/wisespine/outputs/phase4_scoliosis/validation_sensitivity_analysis.png)
+![V3: Sensitivity Analysis — Parameter Sweep Monotonicity](../_archive/old_outputs/phase4_scoliosis/validation_sensitivity_analysis.png)
  
 ### 10.4 V4: Physical Constraint Check (Quantitative Evidence)
 
@@ -1315,7 +1356,7 @@ Three fundamental physical laws verified at each transformation:
  
 **Finding**: All transformations pass mass conservation (<10% deviation), volume conservation (<20%), anatomical plausibility (no NaN, no Inf, no impossible densities), and boundary smoothness.
  
-![V4: Physical Constraint Verification](/gscratch/scrubbed/june0604/wisespine/outputs/phase4_scoliosis/validation_physical_constraints.png)
+![V4: Physical Constraint Verification](../_archive/old_outputs/phase4_scoliosis/validation_physical_constraints.png)
  
 ### 10.5 V5: 3D Coherence & SSIM (Quantitative Evidence)
 
@@ -1330,7 +1371,7 @@ Inter-slice structural similarity and MPR reconstruction smoothness:
  
 **Finding**: All volumes maintain SSIM > 0.94 (no slice below 0.90 threshold), and MPR smoothness > 0.82 in all directions. This proves 3D structural consistency is preserved through all simulation stages.
  
-![V5: 3D Coherence & SSIM Validation](/gscratch/scrubbed/june0604/wisespine/outputs/phase4_scoliosis/validation_3d_coherence.png)
+![V5: 3D Coherence & SSIM Validation](../_archive/old_outputs/phase4_scoliosis/validation_3d_coherence.png)
  
 ### 10.6 Validation Summary
  
@@ -1980,6 +2021,14 @@ To rigorously verify the "physics-based" claim, we conducted an exhaustive visua
 - **Limitation**: The deformation field resolution (0.125 scale) appears to saturate at high curvatures.
 - **Status**: **Functionally Valid up to 40°**, plateau at 60°.
 
+![Scoliosis Progression](./fracture_reports/figures/scoliosis_progression.png)
+
+*Coronal view showing Cobb angle progression from 0° → 10° → 20° → 30° → 45° → 60°.*
+
+![Scoliosis Progression Animation](./fracture_reports/figures/scoliosis_progression.gif)
+
+*Animated Cobb angle sweep showing gradual lateral curvature increase.*
+
 #### 3. Tumor Simulation
 - **Observation**: Tumor effects are physically modeled (lytic/blastic) but the **affected volume is small** (~286 voxels) because lesions are targeted at pedicle screw locations rather than the vertebral body center.
 - **Status**: **Physically Sound but Spatially Limited**.
@@ -1990,6 +2039,12 @@ To rigorously verify the "physics-based" claim, we conducted an exhaustive visua
 
 ### Deep Review Visualizations
 These panels provide transparency into the simulation quality.
+
+**Complete Simulation Suite Overview:**
+
+![Complete Simulation Suite](./fracture_reports/figures/complete_simulation_suite.png)
+
+*Overview dashboard of all simulation modules: Fractures (A1-A4), CT Physics, Tumors, Hardware, Scoliosis.*
 
 ![Review 1: Multi-Plane Inspection](/mmfs1/home/june0604/.gemini/antigravity/brain/92d0520f-43b0-409e-bcfb-e25e827e9d18/review1_multiplane_all_stages.png)
 *Fig 11.1: Multi-plane view of all simulation stages. Note the preservation of anatomy across transformations.*
@@ -2010,11 +2065,11 @@ These panels provide transparency into the simulation quality.
 
 **End of Report**
 
-**Last Updated**: 2026-02-04  
-**Status**: Strategic Pivot - Two-track approach initiated  
+**Last Updated**: 2026-02-10  
+**Status**: Enhanced fracture reports with physics validation, annotated visualizations (axial+sagittal), and quantitative analysis  
 **Next Milestone**: 
 - Track A: CV aug pipeline + TS fine-tuning (Week 1-2)
-- Track B: Counterfactual consistency validation (Week 1-2)
+- Track B: Multi-subject fracture generation + counterfactual consistency validation
 
 **Repositories**:
 - Track A: `/gscratch/scrubbed/june0604/wisespine_for_abnormal` (Clinical tasks)

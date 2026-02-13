@@ -1,0 +1,32 @@
+{
+  "Clean (Scoliosis Only)": {
+    "CNR": 4.4,
+    "Edge_Sharpness": 990.25,
+    "Boundary_Integrity": 1.0,
+    "Predicted_Dice_Impact": "Medium"
+  },
+  "With Hardware": {
+    "CNR": 3.55,
+    "Edge_Sharpness": 1018.17,
+    "Boundary_Integrity": 1.0,
+    "Predicted_Dice_Impact": "Medium"
+  },
+  "With Tumors": {
+    "CNR": 4.4,
+    "Edge_Sharpness": 989.64,
+    "Boundary_Integrity": 1.0,
+    "Predicted_Dice_Impact": "Medium"
+  },
+  "Post-Op (Surgery)": {
+    "CNR": 4.38,
+    "Edge_Sharpness": 990.58,
+    "Boundary_Integrity": 1.0,
+    "Predicted_Dice_Impact": "Medium"
+  },
+  "Causal Response": {
+    "CNR": 4.39,
+    "Edge_Sharpness": 989.77,
+    "Boundary_Integrity": 1.0,
+    "Predicted_Dice_Impact": "Medium"
+  }
+}

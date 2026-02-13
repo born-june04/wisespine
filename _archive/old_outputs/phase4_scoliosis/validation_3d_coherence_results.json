@@ -1,0 +1,38 @@
+{
+  "Original (Scoliosis)": {
+    "mean_ssim": 0.9768,
+    "min_ssim": 0.9581,
+    "low_ssim_count": 0,
+    "total_slices": 102,
+    "sagittal_smoothness": 0.8614,
+    "coronal_smoothness": 0.8239,
+    "coherent": true
+  },
+  "With Artifacts": {
+    "mean_ssim": 0.9746,
+    "min_ssim": 0.9422,
+    "low_ssim_count": 0,
+    "total_slices": 102,
+    "sagittal_smoothness": 0.8664,
+    "coronal_smoothness": 0.8337,
+    "coherent": true
+  },
+  "Post-Op": {
+    "mean_ssim": 0.9765,
+    "min_ssim": 0.958,
+    "low_ssim_count": 0,
+    "total_slices": 102,
+    "sagittal_smoothness": 0.861,
+    "coronal_smoothness": 0.823,
+    "coherent": true
+  },
+  "Causal Response": {
+    "mean_ssim": 0.9765,
+    "min_ssim": 0.9581,
+    "low_ssim_count": 0,
+    "total_slices": 102,
+    "sagittal_smoothness": 0.8608,
+    "coronal_smoothness": 0.8229,
+    "coherent": true
+  }
+}

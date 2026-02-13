@@ -34,7 +34,6 @@ VerSe/
 outputs/**/ct_*.nii.gz
 outputs/**/ts_*/
 outputs/**/*.nii.gz
-_archive*/
 
 # Logs
 *.log

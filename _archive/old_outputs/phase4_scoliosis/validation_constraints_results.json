@@ -1,0 +1,159 @@
+{
+  "mass_conservation": [
+    {
+      "mass_pre": -148.242,
+      "mass_post": -147.302,
+      "ratio": 0.9937,
+      "delta_pct": 0.63,
+      "conserved": true,
+      "stage": "Scoliosis\u2192Hardware"
+    },
+    {
+      "mass_pre": -148.242,
+      "mass_post": -148.24,
+      "ratio": 1.0,
+      "delta_pct": 0.0,
+      "conserved": true,
+      "stage": "Scoliosis\u2192Tumors"
+    },
+    {
+      "mass_pre": -148.242,
+      "mass_post": -148.239,
+      "ratio": 1.0,
+      "delta_pct": 0.0,
+      "conserved": true,
+      "stage": "Scoliosis\u2192PostOp"
+    },
+    {
+      "mass_pre": -148.239,
+      "mass_post": -148.32,
+      "ratio": 1.0005,
+      "delta_pct": 0.05,
+      "conserved": true,
+      "stage": "PostOp\u2192Causal"
+    }
+  ],
+  "volume_conservation": [
+    {
+      "bone_voxels_pre": 10835594,
+      "bone_voxels_post": 11042561,
+      "ratio": 1.0191,
+      "delta_pct": 1.91,
+      "conserved": true,
+      "stage": "Scoliosis\u2192Hardware"
+    },
+    {
+      "bone_voxels_pre": 10835594,
+      "bone_voxels_post": 10836242,
+      "ratio": 1.0001,
+      "delta_pct": 0.01,
+      "conserved": true,
+      "stage": "Scoliosis\u2192Tumors"
+    },
+    {
+      "bone_voxels_pre": 10835594,
+      "bone_voxels_post": 10838044,
+      "ratio": 1.0002,
+      "delta_pct": 0.02,
+      "conserved": true,
+      "stage": "Scoliosis\u2192PostOp"
+    },
+    {
+      "bone_voxels_pre": 10838044,
+      "bone_voxels_post": 10811068,
+      "ratio": 0.9975,
+      "delta_pct": 0.25,
+      "conserved": true,
+      "stage": "PostOp\u2192Causal"
+    }
+  ],
+  "anatomical_plausibility": [
+    {
+      "below_CT_min": 0,
+      "above_reasonable_max": 0,
+      "bone_mean_hu": 443.7,
+      "bone_std_hu": 310.5,
+      "bone_in_valid_range": true,
+      "has_nan": false,
+      "has_inf": false,
+      "plausible": true,
+      "stage": "Original\u2192Scoliosis"
+    },
+    {
+      "below_CT_min": 0,
+      "above_reasonable_max": 0,
+      "bone_mean_hu": 443.7,
+      "bone_std_hu": 310.5,
+      "bone_in_valid_range": true,
+      "has_nan": false,
+      "has_inf": false,
+      "plausible": true,
+      "stage": "Scoliosis\u2192Hardware"
+    },
+    {
+      "below_CT_min": 0,
+      "above_reasonable_max": 0,
+      "bone_mean_hu": 443.7,
+      "bone_std_hu": 310.5,
+      "bone_in_valid_range": true,
+      "has_nan": false,
+      "has_inf": false,
+      "plausible": true,
+      "stage": "Scoliosis\u2192Tumors"
+    },
+    {
+      "below_CT_min": 0,
+      "above_reasonable_max": 0,
+      "bone_mean_hu": 443.7,
+      "bone_std_hu": 310.5,
+      "bone_in_valid_range": true,
+      "has_nan": false,
+      "has_inf": false,
+      "plausible": true,
+      "stage": "Scoliosis\u2192PostOp"
+    },
+    {
+      "below_CT_min": 0,
+      "above_reasonable_max": 0,
+      "bone_mean_hu": 444.0,
+      "bone_std_hu": 310.2,
+      "bone_in_valid_range": true,
+      "has_nan": false,
+      "has_inf": false,
+      "plausible": true,
+      "stage": "PostOp\u2192Causal"
+    }
+  ],
+  "boundary_smoothness": [
+    {
+      "smooth": true,
+      "mean_inter_slice_diff": 0,
+      "max_inter_slice_diff": 0,
+      "stage": "Original\u2192Scoliosis"
+    },
+    {
+      "smooth": true,
+      "mean_inter_slice_diff": 0,
+      "max_inter_slice_diff": 0,
+      "stage": "Scoliosis\u2192Hardware"
+    },
+    {
+      "smooth": true,
+      "mean_inter_slice_diff": 0,
+      "max_inter_slice_diff": 0,
+      "stage": "Scoliosis\u2192Tumors"
+    },
+    {
+      "smooth": true,
+      "mean_inter_slice_diff": 0,
+      "max_inter_slice_diff": 0,
+      "stage": "Scoliosis\u2192PostOp"
+    },
+    {
+      "smooth": true,
+      "mean_inter_slice_diff": 0,
+      "max_inter_slice_diff": 0,
+      "stage": "PostOp\u2192Causal"
+    }
+  ]
+}
