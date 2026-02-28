@@ -20,7 +20,7 @@ AO Type A2 fractures are **coronal or sagittal plane split fractures** that exte
 
 ### Detailed Analysis (Axial + Sagittal + Annotations + Zoomed)
 
-![AO A2 Detailed Analysis](figures/AO_A2_Split_Fracture.png)
+![AO A2 Detailed Analysis](../../figs/AO_A2_Split_Fracture.png)
 
 **Figure interpretation:**
 - **Row 1 (AXIAL):** The coronal fracture line is visible as a dark horizontal band through the vertebral body. Yellow arrow marks "Coronal Split Line."
@@ -29,7 +29,7 @@ AO Type A2 fractures are **coronal or sagittal plane split fractures** that exte
 
 ### Severity Progression (Axial + Sagittal)
 
-![AO A2 Severity Gallery](figures/AO_A2_Split_Fracture_severity.png)
+![AO A2 Severity Gallery](../../figs/AO_A2_Split_Fracture_severity.png)
 
 **Progression notes:**
 - **Mild (0.3):** Hairline fracture visible, minimal fragment separation (<1mm equivalent)

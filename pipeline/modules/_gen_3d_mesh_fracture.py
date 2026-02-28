@@ -198,28 +198,29 @@ def render_mesh(ax, verts, faces, face_colors, elev=25, azim=-50,
 
     # Overlay dark crack lines on high-damage faces
     if damage_vals is not None:
-        crack_mask = damage_vals > 0.10
+        crack_mask = damage_vals > 0.08
         if crack_mask.any():
             crack_faces = faces[crack_mask]
-            # Scale edge width by damage intensity
             crack_d = damage_vals[crack_mask]
-            intensity = np.clip((crack_d - 0.10) / 0.20, 0.2, 1.0)
-            # Draw crack faces with dark edges
+            intensity = np.clip((crack_d - 0.08) / 0.15, 0.3, 1.0)
+            # Draw crack faces with THICK dark edges
             crack_mesh = Poly3DCollection(
-                verts[crack_faces], linewidths=0.8
+                verts[crack_faces], linewidths=2.5
             )
-            # Very dark, nearly transparent faces (ghost of damage)
+            # Semi-transparent dark overlay on cracked faces
             n_crack = len(crack_faces)
             crack_fc = np.zeros((n_crack, 4))
-            crack_fc[:, 0] = 0.15  # Very dark red
-            crack_fc[:, 3] = intensity * 0.3  # Semi-transparent
+            crack_fc[:, 0] = 0.08  # Very dark
+            crack_fc[:, 1] = 0.02
+            crack_fc[:, 2] = 0.02
+            crack_fc[:, 3] = intensity * 0.5  # Visible overlay
             crack_mesh.set_facecolor(crack_fc)
-            # Dark brown-black edges = crack lines
+            # Near-black edges = crack lines — fully opaque
             crack_ec = np.zeros((n_crack, 4))
-            crack_ec[:, 0] = 0.12  # Dark maroon
-            crack_ec[:, 1] = 0.02
-            crack_ec[:, 2] = 0.02
-            crack_ec[:, 3] = intensity * 0.85  # Nearly opaque edges
+            crack_ec[:, 0] = 0.05
+            crack_ec[:, 1] = 0.0
+            crack_ec[:, 2] = 0.0
+            crack_ec[:, 3] = intensity * 0.95  # Nearly fully opaque
             crack_mesh.set_edgecolor(crack_ec)
             ax.add_collection3d(crack_mesh)
 
@@ -667,6 +668,274 @@ def generate_zoom_fracture(ao_type, ct, mask, verts, faces, output_path):
     print(f"  ✅ {ao_type} zoom fracture: {output_path}")
 
 
+def generate_cascade_analysis(ct, mask, output_path):
+    """Cascade analysis: damage heatmaps + damage curves per AO type.
+    
+    Produces a rich analysis figure inspired by the old cascade plots:
+    - Row 0: Per-AO damage cascade heatmaps (anatomical zones × time)
+    - Row 1: Per-AO damage curves (peak, mean, %damaged, %fractured over time)
+    - Row 2: Final-state bar chart comparing AO types
+    """
+    positions = sample_particles(mask)
+    ao_types = ['A1', 'A2', 'A3', 'A4']
+    
+    # Define anatomical zones by spatial partitioning
+    # Split vertebra into anterior/central/posterior (by Y), endplate/mid (by Z)
+    p_min = positions.min(axis=0)
+    p_max = positions.max(axis=0)
+    p_range = p_max - p_min
+    
+    zone_names = ['Anterior\nBody', 'Central\nBody', 'Posterior\nBody',
+                  'Cortical\nShell', 'Endplate', 'Pedicle', 'Lamina']
+    n_zones = len(zone_names)
+    
+    def classify_zones(pos):
+        """Assign each particle to an anatomical zone."""
+        norm = (pos - p_min) / (p_range + 1e-8)  # normalized [0,1]
+        zones = np.zeros(len(pos), dtype=int)
+        # Y dimension: anterior (0-0.33), central (0.33-0.66), posterior (0.66-1.0)
+        zones[norm[:, 1] < 0.33] = 0  # Anterior body
+        zones[(norm[:, 1] >= 0.33) & (norm[:, 1] < 0.66)] = 1  # Central body
+        zones[norm[:, 1] >= 0.66] = 2  # Posterior body
+        # Overrides based on other dims
+        # Cortical shell: near surface (extreme X or Y or Z positions)
+        dist = np.minimum(norm, 1 - norm).min(axis=1)
+        zones[dist < 0.08] = 3  # Cortical shell
+        # Endplate: top/bottom Z
+        zones[(norm[:, 2] < 0.12) | (norm[:, 2] > 0.88)] = 4  # Endplate
+        # Pedicle: posterior + mid-height + lateral
+        pedicle_mask = ((norm[:, 1] > 0.55) & (norm[:, 2] > 0.3) & 
+                       (norm[:, 2] < 0.7) & ((norm[:, 0] < 0.25) | (norm[:, 0] > 0.75)))
+        zones[pedicle_mask] = 5  # Pedicle
+        # Lamina: far posterior + mid-height
+        lamina_mask = (norm[:, 1] > 0.82) & (norm[:, 2] > 0.25) & (norm[:, 2] < 0.75)
+        zones[lamina_mask] = 6  # Lamina
+        return zones
+    
+    zones = classify_zones(positions)
+    
+    # Run simulations and collect history per AO type
+    all_histories = {}
+    n_record_steps = 40  # Number of timepoints to record
+    
+    for ao_type in ao_types:
+        config = AO_LOAD_CONFIGS[ao_type]
+        sim = BoneFractureSimulator(positions.copy(), seed=42)
+        sim.setup_ao_loading(ao_type)
+        sim.set_stress_mode('grid')
+        sim.enable_anisotropy(ratio=2.0)
+        configure_for_real_vertebra(sim)
+        scaled_force = config['max_force'] * FORCE_SCALE
+        
+        zone_damage_history = np.zeros((n_record_steps, n_zones))
+        peak_damage_hist = []
+        mean_damage_hist = []
+        damaged_frac_hist = []
+        fractured_frac_hist = []
+        step_indices = []
+        
+        n_steps = 200
+        record_every = max(1, n_steps // n_record_steps)
+        idx = 0
+        
+        for step in range(n_steps + 1):
+            force = scaled_force * step / n_steps
+            sim.compute_stress(force)
+            sim.evolve_damage()
+            
+            if step % record_every == 0 and idx < n_record_steps:
+                d = sim.damage.copy()
+                step_indices.append(step)
+                peak_damage_hist.append(d.max())
+                mean_damage_hist.append(d[d > 0.001].mean() if (d > 0.001).any() else 0)
+                damaged_frac_hist.append((d > 0.01).mean())
+                fractured_frac_hist.append((d > 0.8).mean())
+                
+                for z in range(n_zones):
+                    zmask = zones == z
+                    if zmask.any():
+                        zone_damage_history[idx, z] = d[zmask].mean()
+                idx += 1
+        
+        all_histories[ao_type] = {
+            'zone_damage': zone_damage_history[:idx],
+            'peak': peak_damage_hist,
+            'mean': mean_damage_hist,
+            'damaged_frac': damaged_frac_hist,
+            'fractured_frac': fractured_frac_hist,
+            'steps': step_indices,
+            'config': config,
+        }
+    
+    # --- Create figure ---
+    fig = plt.figure(figsize=(22, 18))
+    fig.patch.set_facecolor('#0a0a12')
+    gs = GridSpec(3, 4, figure=fig, hspace=0.35, wspace=0.25,
+                  height_ratios=[1.0, 0.8, 0.6])
+    
+    fig.suptitle('AO Fracture Cascade Analysis — Damage Propagation by Anatomical Zone',
+                 fontsize=16, fontweight='bold', color='white', y=0.97)
+    
+    # Colors matching the cascade style
+    cmap_heat = plt.cm.inferno  # Hot heatmap for damage
+    
+    # --- Row 0: Damage cascade heatmaps ---
+    for col, ao_type in enumerate(ao_types):
+        hist = all_histories[ao_type]
+        ax = fig.add_subplot(gs[0, col])
+        ax.set_facecolor('#0a0a12')
+        
+        # Heatmap: zones × time
+        data = hist['zone_damage'].T  # shape: (n_zones, n_steps)
+        im = ax.imshow(data, aspect='auto', cmap=cmap_heat, 
+                       vmin=0, vmax=max(0.01, data.max()),
+                       interpolation='bilinear',
+                       extent=[0, len(hist['steps'])-1, n_zones-0.5, -0.5])
+        
+        ax.set_yticks(range(n_zones))
+        ax.set_yticklabels(zone_names, fontsize=7, color='#ccc')
+        ax.set_xlabel('Simulation Step', fontsize=8, color='#aaa')
+        
+        # Convert x ticks to actual step numbers
+        n_pts = len(hist['steps'])
+        tick_pos = np.linspace(0, n_pts-1, 5).astype(int)
+        ax.set_xticks(tick_pos)
+        ax.set_xticklabels([str(hist['steps'][i]) for i in tick_pos], 
+                          fontsize=7, color='#aaa')
+        
+        ax.set_title(f"{hist['config']['name']}", fontsize=10, 
+                    fontweight='bold', color='#ff6644', pad=8)
+        ax.tick_params(colors='#666', labelsize=7)
+        for sp in ax.spines.values():
+            sp.set_color('#333')
+        
+        # Colorbar
+        cbar = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02)
+        cbar.ax.tick_params(labelsize=6, colors='#aaa')
+        cbar.set_label('Mean Damage', fontsize=7, color='#aaa')
+    
+    # --- Row 1: Damage curves per AO type ---
+    ao_colors = {'A1': '#ff4444', 'A2': '#ff8844', 'A3': '#ffaa00', 'A4': '#ff2288'}
+    
+    for col, ao_type in enumerate(ao_types):
+        hist = all_histories[ao_type]
+        ax = fig.add_subplot(gs[1, col])
+        ax.set_facecolor('#0a0a12')
+        
+        steps = hist['steps']
+        
+        # Peak damage
+        ax.plot(steps, hist['peak'], color='#ff2222', lw=2.0, label='Peak D')
+        ax.fill_between(steps, hist['peak'], alpha=0.15, color='#ff2222')
+        
+        # Mean damage (non-zero particles)
+        ax.plot(steps, hist['mean'], color='#ffaa00', lw=1.5, label='Mean D', ls='--')
+        
+        # %Damaged and %Fractured as filled areas
+        damaged_pct = [d * 100 for d in hist['damaged_frac']]
+        fractured_pct = [f * 100 for f in hist['fractured_frac']]
+        ax2 = ax.twinx()
+        ax2.fill_between(steps, damaged_pct, alpha=0.2, color='#44aaff')
+        ax2.plot(steps, damaged_pct, color='#44aaff', lw=1.0, label='%Damaged', ls=':')
+        ax2.fill_between(steps, fractured_pct, alpha=0.2, color='#ff44ff')
+        ax2.plot(steps, fractured_pct, color='#ff44ff', lw=1.0, label='%Fractured', ls=':')
+        ax2.set_ylim(0, max(max(damaged_pct) * 1.5, 1))
+        ax2.set_ylabel('%', fontsize=7, color='#888')
+        ax2.tick_params(colors='#666', labelsize=6)
+        
+        # Threshold lines
+        ax.axhline(y=0.08, color='#ff4444', lw=0.5, ls=':', alpha=0.5)
+        ax.axhline(y=0.25, color='#ff8844', lw=0.5, ls=':', alpha=0.5)
+        ax.text(steps[-1]*0.02, 0.085, 'crack onset', fontsize=5, color='#ff4444', alpha=0.7)
+        ax.text(steps[-1]*0.02, 0.255, 'full crack', fontsize=5, color='#ff8844', alpha=0.7)
+        
+        ax.set_xlabel('Step', fontsize=7, color='#aaa')
+        ax.set_ylabel('Damage Index', fontsize=7, color='#aaa')
+        ax.set_ylim(0, max(max(hist['peak']) * 1.2, 0.05))
+        ax.tick_params(colors='#666', labelsize=6)
+        ax.legend(fontsize=6, loc='upper left', framealpha=0.3, 
+                 labelcolor='#ccc', facecolor='#1a1a2e')
+        for sp in ax.spines.values():
+            sp.set_color('#333')
+        for sp in ax2.spines.values():
+            sp.set_color('#333')
+    
+    # --- Row 2: Final-state comparison bar chart ---
+    ax = fig.add_subplot(gs[2, :2])
+    ax.set_facecolor('#0a0a12')
+    
+    x = np.arange(len(ao_types))
+    bar_w = 0.35
+    
+    final_damaged = [all_histories[ao]['damaged_frac'][-1] * 100 for ao in ao_types]
+    final_fractured = [all_histories[ao]['fractured_frac'][-1] * 100 for ao in ao_types]
+    
+    bars1 = ax.bar(x - bar_w/2, final_damaged, bar_w, color='#ff4444', alpha=0.8, 
+                   label='% Damaged (D>0.01)')
+    bars2 = ax.bar(x + bar_w/2, final_fractured, bar_w, color='#ffaa00', alpha=0.8,
+                   label='% Fractured (D>0.8)')
+    
+    ax.set_xticks(x)
+    ao_labels = [all_histories[ao]['config']['name'] for ao in ao_types]
+    ax.set_xticklabels(ao_labels, fontsize=8, color='#ccc')
+    ax.set_ylabel('% Particles', fontsize=9, color='#aaa')
+    ax.set_title('Final Damage Distribution by AO Type', fontsize=11, 
+                fontweight='bold', color='white', pad=8)
+    ax.legend(fontsize=8, framealpha=0.3, labelcolor='#ccc', facecolor='#1a1a2e')
+    ax.tick_params(colors='#666', labelsize=7)
+    for sp in ax.spines.values():
+        sp.set_color('#333')
+    
+    # Bar value labels
+    for bar in bars1:
+        if bar.get_height() > 0.5:
+            ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.3,
+                   f'{bar.get_height():.1f}%', ha='center', fontsize=7, color='#ff6666')
+    for bar in bars2:
+        if bar.get_height() > 0.1:
+            ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.3,
+                   f'{bar.get_height():.1f}%', ha='center', fontsize=7, color='#ffcc00')
+    
+    # Peak damage comparison
+    ax3 = fig.add_subplot(gs[2, 2:])
+    ax3.set_facecolor('#0a0a12')
+    
+    peak_damages = [all_histories[ao]['peak'][-1] for ao in ao_types]
+    mean_damages = [all_histories[ao]['mean'][-1] for ao in ao_types]
+    
+    bars3 = ax3.bar(x - bar_w/2, peak_damages, bar_w, color='#ff2222', alpha=0.8,
+                    label='Peak Damage')
+    bars4 = ax3.bar(x + bar_w/2, mean_damages, bar_w, color='#44aaff', alpha=0.8,
+                    label='Mean Damage (non-zero)')
+    
+    ax3.set_xticks(x)
+    ax3.set_xticklabels(ao_labels, fontsize=8, color='#ccc')
+    ax3.set_ylabel('Damage Index', fontsize=9, color='#aaa')
+    ax3.set_title('Peak vs Mean Damage by AO Type', fontsize=11,
+                 fontweight='bold', color='white', pad=8)
+    ax3.legend(fontsize=8, framealpha=0.3, labelcolor='#ccc', facecolor='#1a1a2e')
+    ax3.tick_params(colors='#666', labelsize=7)
+    for sp in ax3.spines.values():
+        sp.set_color('#333')
+    
+    # Threshold line
+    ax3.axhline(y=0.08, color='#ff4444', lw=0.8, ls='--', alpha=0.5)
+    ax3.text(0, 0.085, 'crack onset', fontsize=6, color='#ff4444', alpha=0.7)
+    
+    # Bar value labels
+    for bar in bars3:
+        ax3.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005,
+                f'{bar.get_height():.3f}', ha='center', fontsize=7, color='#ff6666')
+    for bar in bars4:
+        ax3.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.005,
+                f'{bar.get_height():.3f}', ha='center', fontsize=7, color='#66ccff')
+    
+    fig.savefig(output_path, dpi=150, facecolor=fig.get_facecolor(),
+                bbox_inches='tight', pad_inches=0.3)
+    plt.close(fig)
+    print(f"  ✅ Cascade analysis: {output_path}")
+
+
 if __name__ == '__main__':
     print("=" * 70)
     print("Combined CT + 3D Mesh Fracture — Real VerSe Vertebra")
@@ -697,5 +966,8 @@ if __name__ == '__main__':
     for ao in ['A1', 'A2', 'A3', 'A4']:
         generate_zoom_fracture(ao, ct, mask, verts, faces,
                                OUTPUT_DIR / f'v2_{ao}_zoom.png')
+
+    print("\n7. Cascade analysis plots...")
+    generate_cascade_analysis(ct, mask, OUTPUT_DIR / 'v2_cascade_analysis.png')
 
     print(f"\n✅ Done! {OUTPUT_DIR}")

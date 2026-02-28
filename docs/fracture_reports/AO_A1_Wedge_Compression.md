@@ -20,7 +20,7 @@ AO Type A1 fractures are **compression injuries of a single endplate** caused by
 
 ### Detailed Analysis (Axial + Sagittal + Annotations + Zoomed)
 
-![AO A1 Detailed Analysis](figures/AO_A1_Wedge_Compression.png)
+![AO A1 Detailed Analysis](../../figs/AO_A1_Wedge_Compression.png)
 
 **Figure interpretation:**
 - **Row 1 (AXIAL):** Original → Fractured → Fracture Location (red overlay + yellow arrow showing "Anterior Wedge Compression") → Zoomed fracture region
@@ -29,7 +29,7 @@ AO Type A1 fractures are **compression injuries of a single endplate** caused by
 
 ### Severity Progression (Axial + Sagittal)
 
-![AO A1 Severity Gallery](figures/AO_A1_Wedge_Compression_severity.png)
+![AO A1 Severity Gallery](../../figs/AO_A1_Wedge_Compression_severity.png)
 
 **Progression notes:**
 - **Mild (0.3):** Subtle anterior height reduction (~10%), minimal endplate irregularity

@@ -21,7 +21,7 @@ AO Type A4 fractures are the most severe compression injuries: **explosive burst
 
 ### Detailed Analysis (Axial + Sagittal + Annotations + Zoomed)
 
-![AO A4 Detailed Analysis](figures/AO_A4_Complete_Burst.png)
+![AO A4 Detailed Analysis](../../figs/AO_A4_Complete_Burst.png)
 
 **Figure interpretation:**
 - **Row 1 (AXIAL):** Yellow arrow marks "Retropulsion Fragment → Canal" — the defining feature. Posterior vertebral body fragment visibly displaced toward the spinal canal.
@@ -30,7 +30,7 @@ AO Type A4 fractures are the most severe compression injuries: **explosive burst
 
 ### Severity Progression (Axial + Sagittal)
 
-![AO A4 Severity Gallery](figures/AO_A4_Complete_Burst_severity.png)
+![AO A4 Severity Gallery](../../figs/AO_A4_Complete_Burst_severity.png)
 
 **Progression notes:**
 - **Mild (0.3):** Early burst pattern, posterior wall fracture with minimal retropulsion

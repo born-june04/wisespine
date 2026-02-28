@@ -20,7 +20,7 @@ AO Type A3 fractures are **burst injuries with posterior wall involvement but li
 
 ### Detailed Analysis (Axial + Sagittal + Annotations + Zoomed)
 
-![AO A3 Detailed Analysis](figures/AO_A3_Incomplete_Burst.png)
+![AO A3 Detailed Analysis](../../figs/AO_A3_Incomplete_Burst.png)
 
 **Figure interpretation:**
 - **Row 1 (AXIAL):** Posterior wall irregularity visible (yellow arrow: "Posterior Wall Fracture (Limited)"). Vertebral body shows centrifugal expansion.
@@ -29,7 +29,7 @@ AO Type A3 fractures are **burst injuries with posterior wall involvement but li
 
 ### Severity Progression (Axial + Sagittal)
 
-![AO A3 Severity Gallery](figures/AO_A3_Incomplete_Burst_severity.png)
+![AO A3 Severity Gallery](../../figs/AO_A3_Incomplete_Burst_severity.png)
 
 **Progression notes:**
 - **Mild (0.3):** Subtle posterior wall irregularity, minimal height loss
