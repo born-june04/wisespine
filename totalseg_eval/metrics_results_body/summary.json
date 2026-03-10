@@ -1,6 +1,0 @@
-{
-  "num_cases": 25,
-  "mean_dice": 0.6594891050805393,
-  "mean_iou": 0.4932646248030396,
-  "missing_gt_subjects": []
-}

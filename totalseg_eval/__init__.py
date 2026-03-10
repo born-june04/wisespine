@@ -1,5 +1,0 @@
-"""
-TotalSegmentator evaluation utilities.
-"""
-
-

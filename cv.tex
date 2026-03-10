@@ -1,0 +1,311 @@
+%-----------------------------------------------------------------------------------------------------------------------------------------------%
+%	The MIT License (MIT)
+%
+%	Copyright (c) 2021 Jitin Nair
+%
+%	Permission is hereby granted, free of charge, to any person obtaining a copy
+%	of this software and associated documentation files (the "Software"), to deal
+%	in the Software without restriction, including without limitation the rights
+%	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+%	copies of the Software, and to permit persons to whom the Software is
+%	furnished to do so, subject to the following conditions:
+%	
+%	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+%	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+%	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+%	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+%	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+%	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+%	THE SOFTWARE.
+%	
+%
+%-----------------------------------------------------------------------------------------------------------------------------------------------%
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT DEFINITION
+%----------------------------------------------------------------------------------------
+
+% article class because we want to fully customize the page and not use a cv template
+\documentclass[a4paper,10pt]{article}
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES
+%----------------------------------------------------------------------------------------
+\usepackage{url}
+\usepackage{parskip} 	
+
+%other packages for formatting
+\RequirePackage{color}
+\RequirePackage{graphicx}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage[scale=0.9]{geometry}
+
+%tabularx environment
+\usepackage{tabularx}
+
+%for lists within experience section
+\usepackage{enumitem}
+
+% centered version of 'X' col. type
+\newcolumntype{C}{>{\centering\arraybackslash}X} 
+
+%to prevent spillover of tabular into next pages
+\usepackage{supertabular}
+\usepackage{tabularx}
+\newlength{\fullcollw}
+\setlength{\fullcollw}{0.47\textwidth}
+
+%custom \section
+\usepackage{titlesec}				
+\usepackage{multicol}
+\usepackage{multirow}
+
+%CV Sections inspired by: 
+%http://stefano.italians.nl/archives/26
+\titleformat{\section}{\large\scshape\raggedright}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{6pt}{6pt}
+
+%for publications
+\usepackage[style=authoryear,sorting=ynt, maxbibnames=2]{biblatex}
+
+%Setup hyperref package, and colours for links
+\usepackage[unicode, draft=false]{hyperref}
+\definecolor{linkcolour}{rgb}{0,0.2,0.6}
+\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour,linkcolor=linkcolour}
+\addbibresource{citations.bib}
+\setlength\bibitemsep{1em}
+
+%for social icons
+\usepackage{fontawesome5}
+\renewcommand{\familydefault}{\sfdefault}
+
+%debug page outer frames
+%\usepackage{showframe}
+
+
+% job listing environments
+\newenvironment{jobshort}[2]
+    {
+    \begin{tabularx}{\linewidth}{@{}l X r@{}}
+    \textbf{#1} & \hfill &  #2 \\
+    \end{tabularx}
+    \vspace{-4pt}
+    }
+    {
+    \vspace{3pt}
+    }
+
+\newenvironment{joblong}[2]
+    {
+    \begin{tabularx}{\linewidth}{@{}l X r@{}}
+    \textbf{#1} & \hfill &  #2 \\[3.75pt]
+    \end{tabularx}
+    \begin{minipage}[t]{\linewidth}
+    \begin{itemize}[nosep,after=\strut, leftmargin=1em, itemsep=3pt,label=--]
+    }
+    {
+    \end{itemize}
+    \end{minipage}    
+    }
+
+
+%----------------------------------------------------------------------------------------
+%	BEGIN DOCUMENT
+%----------------------------------------------------------------------------------------
+\begin{document}
+
+% non-numbered pages
+\pagestyle{empty} 
+
+%----------------------------------------------------------------------------------------
+%	TITLE
+%----------------------------------------------------------------------------------------
+\begin{center}
+\LARGE{June (Junhyeok) Lee}\\[7.5pt]
+\normalsize{
+\href{https://github.com/born-june04}{\raisebox{-0.05\height}\faGithub\ born-june04} \ $|$ \ 
+\href{https://linkedin.com/in/junh-lee/}{\raisebox{-0.05\height}\faLinkedin\ junh-lee} \ $|$ \ 
+\href{https://born-june04.github.io/}{\raisebox{-0.05\height}\faGlobe \ Portfolio} \ $|$ \ 
+\href{mailto:june0604@uw.edu}{\raisebox{-0.05\height}\faEnvelope \ june0604@uw.edu} \ $|$ \ 
+\href{tel:+12065127412}{\raisebox{-0.05\height}\faMobile \ +1.206.512.7412}
+}\\[5pt]
+\end{center}
+
+%Interests/ Keywords/ Summary
+\section{Summary}
+I develop clinically aligned representation learning systems for biomedical AI. I move beyond black-box optimization by embedding physiological and structural priors into models to improve robustness under real-world distribution shift.
+
+
+%----------------------------------------------------------------------------------------
+%	EDUCATION
+%----------------------------------------------------------------------------------------
+\section{Education}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+2025 -- Present & \textbf{M.S. in Bioengineering}, University of Washington \hfill GPA: 3.9/4.0 \\
+& Focus: Multi-scale biomechanics and physics-informed deep learning \\
+& \textit{Expected Graduation: June 2026} \\[4pt]
+
+2018 -- 2024 & \textbf{B.S. in Biomedical Engineering}, Hankuk University of Foreign Studies \hfill GPA: 3.9/4.0 \\
+& Thesis: \textit{Deep Clustering of Single-cell RNA-seq with Combined Features} \\
+\end{tabularx}
+
+
+%----------------------------------------------------------------------------------------
+%	WORK EXPERIENCE
+%----------------------------------------------------------------------------------------
+%Experience
+\section{Work Experience}
+
+\begin{joblong}{Research Scientist | Monitor Corporation}{Jul 2023 -- Jun 2025}
+\item \textbf{Probe-Conditional Ultrasound Denoising (Production DDPM)}:
+\begin{itemize}[nosep,after=\strut, leftmargin=2em, itemsep=1pt,label=$\circ$]
+\item Reduced false positives by \textbf{89\% across 50K+ clinical scans} by deploying a probe-conditional DDPM with contrastive learning to suppress spectral artifacts across three GE ultrasound probe variants
+\item Eliminated per-probe retraining by unifying domain adaptation into a single conditional architecture, explicitly conditioning on probe-specific prior distributions to address hardware-induced domain shift
+\end{itemize}
+\item \textbf{Semi-Supervised 3D Segmentation Pipeline}:
+\begin{itemize}[nosep,after=\strut, leftmargin=2em, itemsep=1pt,label=$\circ$]
+\item Achieved \textbf{0.72 Dice} with sub-second inference for tumor segmentation by building a Fast Fourier Convolution (FFC) 3D U-Net with multi-scale frequency filtering
+\item Reduced annotation cost by \textbf{21,600 hours (\$540K)} by designing a MedSAM-inspired semi-supervised framework with reliability scoring, scaling \textbf{300 to 21,900 labeled scans} (1:73 ratio) while maintaining fully supervised parity
+\end{itemize}
+\item \textbf{Model Compression for Edge Deployment}:
+\begin{itemize}[nosep,after=\strut, leftmargin=2em, itemsep=1pt,label=$\circ$]
+\item Achieved \textbf{2.5$\times$ faster inference} preserving \textbf{98\% accuracy} by applying bfloat16 quantization and structured pruning to compress 3D segmentation models by 50\%, enabling real-time clinical deployment
+\end{itemize}
+\end{joblong}
+
+%----------------------------------------------------------------------------------------
+%	RESEARCH EXPERIENCE
+%----------------------------------------------------------------------------------------
+\vspace{-7pt}
+\section{Research Experience}
+
+\begin{joblong}{Vector Decomposition from Frozen Segmentation Encoders | Asan Hospital }{Jan 2025 -- Present}
+\item Discovered latent biomarker axes in frozen segmentation encoders recoverable with \textbf{zero trainable parameters}, achieving directional stability (5-fold cos$\theta$=0.90/0.96) via centroid-difference projections
+\item Demonstrated zero-shot generalization to held-out patients (\textbf{CVS AUC 0.803, PRL AUC 0.716}) without any task-specific training
+\item Validated physical grounding with imaging gradients (SWI gradient $p<0.001$; PRL rim $\rho=-0.49$, $p<0.001$); submitted to \textit{MICCAI 2026} (2nd author)
+\end{joblong}
+
+\vspace{-5pt}
+
+\begin{joblong}{WiseFind: Structure-as-Context Multimodal RAG | Harborview Medical Center (HMC)}{Sep 2025 -- Present}
+\item Identified intra-domain visual homogeneity as a fundamental retrieval barrier (silhouette $<$0.06 post-fine-tuning), motivating text- and structure-based retrieval over visual embeddings
+\item Achieved \textbf{P@1 0.848, MRR 0.872, R@5 0.701}\textbf{---3.3$\times$} above best visual baseline on 200 expert neurosurgical queries by proposing Shotgun Retrieval via THC Tree with three complementary channels (T2I, CI, XRef)
+\item Raised hard-query P@1 by \textbf{+76\%} for figures $>$10 pages from text anchor by fine-tuning ColBERT (PubMedBERT backbone, 30K steps) on 5,544 domain-specific pairs with cross-reference following
+\item Submitted to \textit{MICCAI 2026} (1st author)
+\end{joblong}
+
+\vspace{-5pt}
+
+\begin{joblong}{WiseMind: RAG-Powered Neurosurgical AI Assistant | HMC}{Feb 2026 -- Present}
+\item Reduced hallucination in medical LLM responses by designing a \textbf{multi-step chain-of-thought pipeline} (Draft $\rightarrow$ Review $\rightarrow$ Refine) with retrieval-grounded inline \textbf{[N] citations} linking each claim to exact source passages for clinician verification
+\item Improved clinical recall by engineering \textbf{ontology-driven query expansion} (1,730 medical terms) and domain-scoped retrieval with automatic fallback, covering \textbf{27,845 indexed passages} across textbook and guideline corpora
+\item Achieved source-faithful multi-document synthesis by prompting \textbf{MedGemma 27B} to present conflicting evidence side-by-side rather than silently resolving disagreements between clinical guidelines
+\item Building an \textbf{RLHF data pipeline} from clinician thumbs-up/down feedback and RAG-provenance-annotated conversations stored in MongoDB, targeting reward model training for domain-aligned LLM fine-tuning; deployed at HMC with 7 release iterations (v1.0--v1.4)
+\end{joblong}
+
+\vspace{-5pt}
+
+\begin{joblong}{WiseSpine: Patient-Specific Vertebral Fracture Simulation | HMC}{Sep 2025 -- Present}
+\item Reproduced \textbf{full A0--A4 AO classification} from first principles by building a patient-specific voxel finite-element engine (234K hexahedral elements, $Ku{=}F$) with HU-derived anisotropic material properties directly from clinical CT
+\item Achieved \textbf{clinically consistent force--fracture thresholds} (A0 at 1\,kN $\rightarrow$ A4 at 8\,kN; BMD\,0.3 $\rightarrow$ 77.5\% yield) by implementing transversely isotropic elasticity, incremental loading, and progressive continuum damage mechanics with cortical shell blending
+\item Enabled \textbf{per-scenario simulation in $<$20\,min} on a single GPU by accelerating sparse assembly and CuPy-based conjugate gradient solve over 784K DOF, making patient-specific fracture risk assessment clinically feasible
+\item Formulated segmentation robustness as a \textbf{physics-constrained counterfactual augmentation} framework with causal DAG analysis (force, BMD, flexion $\rightarrow$ AO type), generating balanced A0--A4 training data from normal CT scans; preparing \textit{NeurIPS 2026}
+\end{joblong}
+
+\vspace{-5pt}
+
+\begin{joblong}{Culture-Positive TB Detection and Physiologically Grounded AI Modeling | Ubicomp Lab}{Sep 2025 -- Present}
+\item Reduced TB diagnostic latency from weeks to real-time, achieving \textbf{AUC 0.9519} and \textbf{92.7\% sensitivity} by developing an acoustic detection system on 7,031 cough segments
+\item Identified infection-linked spectral signatures by extracting \textbf{57 physiological biomarkers}, revealing demographic and bacterial-load heterogeneity (female-specific slope $d=0.593$; age-dependent reversals)
+\item Demonstrated interpretability via saliency concentration (25.9\% in 500--3000 Hz) and biomarker correlation ($|r|$ up to 0.42); in preparation for \textit{Nature Communications}
+\end{joblong}
+
+\vspace{-5pt}
+
+\begin{joblong}{Tissue-Aware Drug Response Prediction | Bioinformatics Lab}{Jan 2022 -- Dec 2025}
+\item Achieved \textbf{$R^2 = 0.857 \pm 0.012$} with \textbf{61.6\% MSE reduction} on 257,955 drug--cell line pairs by modeling tissue identity as a structural prior using 54,837 GTEx samples
+\item Validated biological grounding of gene-importance estimation (DrugBank/KEGG $p < 10^{-8}$; $r=0.40$) by designing a cross-attention multimodal architecture
+\item Manuscript under review at \textit{Bioinformatics}
+\end{joblong}
+
+\vspace{-5pt}
+
+\begin{joblong}{MRI Bias Field Correction with Generative AI | MedicalVision Lab}{Aug 2022 -- Apr 2023}
+\item Achieved \textbf{9.75$\times$ faster inference} than standard DDPM while preserving diagnostic fidelity by developing a diffusion-based MRI bias field correction with Hampel mixture noise modeling; published at \textbf{\textit{MIDL 2023}}
+\end{joblong}
+
+
+\section{Hackathon}
+
+\begin{joblong}{Google MedGemma 2026 Healthcare Hackathon \textnormal{(\href{https://github.com/born-june04/medgemma_2026challenge}{GitHub}, \href{https://www.youtube.com/watch?v=j5Z_kRi3wDU}{Demo})}}{Jan 2026 -- Present}
+\item Achieved end-to-end multi-modal clinical diagnosis in $\sim$5s on consumer hardware by architecting a \textbf{three-agent pipeline} (Audio/HeAR, CXR/MedSigLIP, CT/MedSigLIP) with confidence-weighted late fusion mirroring the multi-specialist case conference model
+\item Produced interpretable \textit{biological stories} linking findings to diagnoses by designing a \textbf{3-level hierarchical reasoning framework} (pathophysiology $\rightarrow$ pattern recognition $\rightarrow$ disease-specific biomarkers) with explicit quantitative thresholds
+\item Formalized \textbf{disagreement as a clinical signal}: divergent agents raise a \textit{NEEDS CONFIRMATION} flag with modality-specific weights (CT $\times$1.2, CXR $\times$1.0, Audio $\times$0.8), surfacing co-morbidity hypotheses rather than silently overriding minority agents
+\item Designed for \textbf{modular deployment in resource-limited settings} --- audio-only smartphone screening (HeAR) gracefully scaling to CXR then CT; FHIR-compatible JSON outputs; submitted to \textit{MedGemma Impact Challenge 2026} (Kaggle)
+\end{joblong}
+
+
+\begin{joblong}{Seoul National University Hospital (SNUH) Skin Burn Classification Hackathon --- 3rd Place}{2022}
+\item Improved burn depth classification without increasing model complexity by introducing a physiologically motivated attenuation-inspired RGB reweighting scheme (0.21, 0.72, 0.07), emphasizing hemoglobin-sensitive green-channel information
+\item Awarded \textbf{3rd Place} among national-level medical AI teams
+\end{joblong}
+
+%----------------------------------------------------------------------------------------
+%	PUBLICATIONS
+%----------------------------------------------------------------------------------------
+\section{Publications}
+
+\textbf{Lee, Junhyeok}, Alex Ching*, Cynthia Dong*, David Horne, Thomas Hawn, Shwetak Patel. (2026). Rapid Identification of Culture-Positive Tuberculosis from Cough Sounds Using Deep Learning. \textit{Nature Communications} (Manuscript in preparation).
+
+\textbf{Lee, Junhyeok}, Aruna Souri*, Mary Nguyen*, Benjamin Han*, Christopher W. Lewis, Diana Wiseman. (2026). WiseFind: Why Structure Matters for Traceable Retrieval in Neurosurgery. \textit{Medical Image Computing and Computer Assisted Intervention (MICCAI)} (under review).
+
+Jeong, Eunseon, \textbf{Lee, Junhyeok}, Yangshin Choi, Yoonho Nam. (2026). Extracting CVS and PRL Biomarker Axes from Frozen Lesion Segmentation Encoders. \textit{Medical Image Computing and Computer Assisted Intervention (MICCAI)} (under review).
+
+\textbf{Lee, Junhyeok}, Jiwon Seo, Younhee Ko. (2026). Interpretable Tissue-Aware Drug Response Prediction Through Biologically Grounded Multimodal Deep Learning. \textit{Bioinformatics} (under review).
+
+\textbf{Lee, Junhyeok*}, J. Kang*, Y. Nam, and T. Lee. (Apr. 2023). Bias Field Correction in MRI with Hampel Noise Denoising Diffusion Probabilistic Model. \textit{Proceedings of Medical Imaging with Deep Learning (MIDL)}.
+
+
+%----------------------------------------------------------------------------------------
+%	TEACHING
+%----------------------------------------------------------------------------------------
+\section{Teaching Experience}
+
+\begin{jobshort}{Teaching Assistant | BIOE 437/537 Computational Systems Biology}{Fall 2025}
+\textit{University of Washington, Prof. Herbert M. Sauro \& Prof. Joseph L. Hellerstein}
+\end{jobshort}
+\begin{itemize}[nosep,after=\strut, leftmargin=1em, itemsep=2pt,label=--]
+\item Assisting enzyme kinetic simulation and optimization coursework; leading office hours and grading
+\item Contributing to novel research integrating simulation-generated data for AI training
+\end{itemize}
+\vspace{2.0pt}
+
+
+%----------------------------------------------------------------------------------------
+%	SKILLS
+%----------------------------------------------------------------------------------------
+\section{Technical Skills}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+Programming Languages &  \normalsize{Python, R, Matlab, SQL, C/C++, Flask, SvelteKit, Neo4j, MongoDB, ChromaDB}\\
+ML/AI Frameworks &  \normalsize{PyTorch, Transformers, DDPM, GenAI, AWS SageMaker, LLM, RAG, ColBERT, FAISS, Ollama}\\
+Systems/Infrastructure &  \normalsize{PyCuda, TensorRT, Distributed Training, Docker, SLURM, HPC Cluster, Apptainer, nginx, Gunicorn}\\
+Project Management &  \normalsize{Atlassian Jira, Confluence, Github}\\
+Research Methodologies &  \normalsize{Physical Simulation, Bayesian Optimization, Statistical Validation, Clinical Trials}\\
+\end{tabularx}
+\vspace{2.0pt}
+
+%----------------------------------------------------------------------------------------
+%	AWARDS
+%----------------------------------------------------------------------------------------
+\section{Awards \& Honors}
+\begin{tabularx}{\linewidth}{@{}l X r@{}}
+2022 & \textbf{Director's Medal}, Korean Information Society Development Institute & ACK \\
+2022 & \textbf{3rd Place}, Skin Burn Classification Hackathon & Seoul National University Hospital \\
+2021 & \textbf{Army Commendation Medal (ARCOM)} & U.S. Army \\
+\end{tabularx}
+
+
+\vfill
+\center{\footnotesize Last updated: \today}
+
+\end{document}

@@ -111,6 +111,7 @@ AO_LOAD_CONFIGS = {
         ],
         'max_force': 3.0,
         'cod_scale': 1.5,  # COD multiplier for this type
+        'retropulsion_ratio': 0.0,  # No posterior wall involvement
     },
     'A2': {
         'name': 'A2 Split Fracture',
@@ -125,6 +126,7 @@ AO_LOAD_CONFIGS = {
         ],
         'max_force': 3.5,
         'cod_scale': 2.0,
+        'retropulsion_ratio': 0.0,  # Coronal split, no retropulsion
     },
     'A3': {
         'name': 'A3 Incomplete Burst',
@@ -139,6 +141,7 @@ AO_LOAD_CONFIGS = {
         ],
         'max_force': 4.0,
         'cod_scale': 2.5,
+        'retropulsion_ratio': 0.15,  # <25% canal compromise
     },
     'A4': {
         'name': 'A4 Complete Burst',
@@ -159,6 +162,7 @@ AO_LOAD_CONFIGS = {
         ],
         'max_force': 5.0,
         'cod_scale': 3.0,
+        'retropulsion_ratio': 0.40,  # >25% canal compromise (up to 50%)
     },
 }
 
@@ -258,6 +262,92 @@ def classify_regions(positions: np.ndarray) -> np.ndarray:
     regions[is_endplate] = 4             # endplate
     regions[is_pedicle] = 5              # pedicle
     regions[is_lamina] = 6               # lamina
+
+    return regions
+
+
+def classify_regions_from_mask(
+    positions: np.ndarray,
+    mask: np.ndarray,
+) -> np.ndarray:
+    """Classify particles into anatomical regions using actual mask geometry.
+
+    Uses EDT (Euclidean Distance Transform) + position ratios instead of
+    hardcoded coordinate bounds. Works correctly on real vertebrae of any
+    size/shape.
+
+    Args:
+        positions: [N, 3] particle positions in NORMALIZED [0,1] space
+        mask: 3D binary bone mask (original voxel space)
+
+    Returns:
+        region_ids: [N] integer region IDs (same scheme as classify_regions)
+            0 = anterior body, 1 = central body, 2 = posterior body
+            3 = cortical shell, 4 = endplate (sup/inf)
+            5 = pedicle, 6 = lamina
+    """
+    N = len(positions)
+    regions = np.ones(N, dtype=np.int32)  # default: central body
+
+    shape = np.array(mask.shape, dtype=np.float32)
+
+    # Map normalized [0,1] positions back to voxel coordinates
+    voxel_pos = positions * (shape - 1)
+    vi = np.clip(voxel_pos[:, 0].astype(int), 0, mask.shape[0] - 1)
+    vj = np.clip(voxel_pos[:, 1].astype(int), 0, mask.shape[1] - 1)
+    vk = np.clip(voxel_pos[:, 2].astype(int), 0, mask.shape[2] - 1)
+
+    # --- EDT for cortical/cancellous separation ---
+    from scipy.ndimage import distance_transform_edt
+    edt = distance_transform_edt(mask > 0).astype(np.float32)
+    max_edt = edt.max() if edt.max() > 0 else 1.0
+
+    # Particle distance from boundary (normalized 0-1)
+    particle_depth = edt[vi, vj, vk] / max_edt
+
+    # Cortical shell: outer 20% of bone (shallow EDT)
+    is_cortical = particle_depth < 0.20
+
+    # --- Position ratios for AP/SI subdivision ---
+    # Find bone centroid and extent
+    bone_coords = np.argwhere(mask > 0)
+    if len(bone_coords) == 0:
+        return regions
+
+    bone_min = bone_coords.min(axis=0).astype(float)
+    bone_max = bone_coords.max(axis=0).astype(float)
+    bone_range = np.maximum(bone_max - bone_min, 1.0)
+    bone_center = (bone_min + bone_max) / 2.0
+
+    # Relative position of each particle within the bone bbox (0-1)
+    rel_pos = (voxel_pos - bone_min) / bone_range
+
+    # AP axis = axis 1 (anterior-posterior)
+    # SI axis = axis 2 (superior-inferior)
+    ap_ratio = rel_pos[:, 1]  # 0 = posterior, 1 = anterior
+    si_ratio = rel_pos[:, 2]  # 0 = inferior, 1 = superior
+
+    # Anterior body: front 1/3
+    is_anterior = ap_ratio > 0.65
+    # Posterior body: back 1/3
+    is_posterior_body = ap_ratio < 0.35
+    # Endplate: top/bottom 15%
+    is_endplate = (si_ratio < 0.15) | (si_ratio > 0.85)
+
+    # Pedicle/Lamina: deep posterior with lateral spread
+    lr_ratio = rel_pos[:, 0]  # left-right
+    is_deep_posterior = ap_ratio < 0.20
+    is_pedicle = is_deep_posterior & ((lr_ratio < 0.30) | (lr_ratio > 0.70))
+    is_lamina = is_deep_posterior & ~is_pedicle
+
+    # Assign regions (order matters — later assignments override)
+    regions[:] = 1  # central body (default)
+    regions[is_anterior] = 0         # anterior body
+    regions[is_posterior_body] = 2    # posterior body
+    regions[is_cortical] = 3         # cortical shell
+    regions[is_endplate] = 4         # endplate
+    regions[is_pedicle] = 5          # pedicle
+    regions[is_lamina] = 6           # lamina
 
     return regions
 
@@ -701,11 +791,23 @@ class BoneFractureSimulator:
     def _apply_fragment_displacement(self):
         """Apply rigid body displacements to separated fragments.
 
-        Small fragments get pushed away from the main body.
-        Posterior fragments get retropulsion toward canal.
+        Enhanced version with:
+        - AO-type-specific retropulsion ratio for canal compromise control
+        - Nonlinear size-proportional displacement (smaller = more mobile)
+        - Fragment angular tilt for retropulsed posterior fragments
+        - Vertebral body scale-aware displacement magnitudes
         """
         if self._n_fragments <= 1:
             return
+
+        # Get AO-specific retropulsion ratio (0 = none, 0.4 = 40% canal)
+        retropulsion_ratio = 0.0
+        if hasattr(self, '_ao_config'):
+            retropulsion_ratio = self._ao_config.get('retropulsion_ratio', 0.0)
+
+        # Vertebral body extent for scale-aware displacement
+        body_extent = self.original_positions.max(axis=0) - self.original_positions.min(axis=0)
+        body_ap_size = max(body_extent[1], 0.01)  # A-P dimension
 
         # Find largest fragment (main body)
         frag_sizes = {}
@@ -732,13 +834,33 @@ class BoneFractureSimulator:
             if sep_norm > 0.001:
                 separation_dir /= sep_norm
 
-            # Displacement magnitude: smaller fragments move more
-            displacement = 0.01 * (1.0 - frag_size_ratio) * self.material.get('cod_magnitude', 0.02) * 10
+            # Nonlinear displacement: smaller fragments are more mobile
+            # (1 - ratio)^1.5 gives aggressive scaling for small fragments
+            mobility = (1.0 - frag_size_ratio) ** 1.5
+            cod_mag = self.material.get('cod_magnitude', 0.02)
+            displacement = mobility * cod_mag * 5.0
 
             # Is this a posterior fragment? Apply retropulsion
-            if frag_center[1] < main_center[1] - 0.02:  # posterior
-                retropulsion = np.array([0.0, -0.01, 0.0], dtype=np.float32)
+            is_posterior = frag_center[1] < main_center[1] - 0.02
+            if is_posterior and retropulsion_ratio > 0:
+                # Retropulsion magnitude: ratio × AP body size
+                # e.g., 0.4 ratio × 0.2 AP = 0.08 displacement toward canal
+                retro_magnitude = retropulsion_ratio * body_ap_size
+                retropulsion = np.array([0.0, -retro_magnitude, 0.0],
+                                        dtype=np.float32)
                 self.positions[mask] += retropulsion
+
+                # Angular tilt: posterior fragments rotate as they displace
+                # Tilt around the x-axis (lateral axis), 5-15 degrees
+                tilt_angle = retropulsion_ratio * 0.25  # radians (~15° max)
+                frag_positions = self.positions[mask] - frag_center
+                cos_t, sin_t = np.cos(tilt_angle), np.sin(tilt_angle)
+                # Rotate y,z around x-axis
+                new_y = frag_positions[:, 1] * cos_t - frag_positions[:, 2] * sin_t
+                new_z = frag_positions[:, 1] * sin_t + frag_positions[:, 2] * cos_t
+                frag_positions[:, 1] = new_y
+                frag_positions[:, 2] = new_z
+                self.positions[mask] = frag_positions + frag_center
 
             self.positions[mask] += separation_dir * displacement
 
