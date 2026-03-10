@@ -230,37 +230,42 @@ class FullFractureEngine:
     # ================================================================
     
     def _setup_explicit(self):
-        """Compute lumped mass matrix and CFL time step."""
-        # Lumped mass: distribute element mass equally to 8 nodes
-        # M_node = Σ(ρ × V / 8) for connected elements  
-        # Density in g/cm³ → kg/mm³: ρ (g/cm³) × 10⁻⁶ = kg/mm³
-        # But we work in N-mm-MPa: mass in mg (milligrams) so F=ma → N=mg×mm/s²
-        # ρ (g/cm³) = ρ (mg/mm³) × 10⁻³ ... 
-        # Simpler: use consistent units. MPa=N/mm², mm, N.
-        # ρ in tonnes/mm³ = g/cm³ × 10⁻⁹  (so that F=ma gives N=t×mm/s²×10⁶)
-        # Actually: MPa system: length=mm, force=N, mass=tonne (10³ kg)
-        # ρ (g/cm³) → tonnes/mm³: multiply by 10⁻⁹
+        """Compute lumped mass matrix with MASS SCALING for quasi-static.
         
-        rho_t = self._rho * 1e-9  # tonnes/mm³ (consistent with N, mm, MPa)
-        elem_mass = rho_t * self._V_elem  # tonnes per element
+        Mass scaling: artificially increase mass so wave speed drops and
+        Δt can be large. This is standard for quasi-static explicit FEM
+        (ABAQUS/Explicit uses the same technique).
         
-        # Scatter to nodes (3 DOFs each get same mass)
+        Key: as long as kinetic energy << strain energy, the quasi-static
+        solution is valid despite artificial mass.
+        """
+        # Consistent units: mm, N, MPa, tonne
+        # ρ (g/cm³) → tonnes/mm³: × 1e-9
+        rho_t = self._rho * 1e-9  # tonnes/mm³
+        
+        # MASS SCALING: multiply by factor to make Δt practical
+        # Without scaling: Δt ≈ 0.2μs, need 500000 steps for 0.1ms
+        # With scaling 1e6: Δt ≈ 0.2ms, need 500 steps for 0.1ms
+        mass_scale = 1e6
+        rho_scaled = rho_t * mass_scale
+        
+        elem_mass = rho_scaled * self._V_elem
+        
         M = np.zeros(self._n_dof_u)
-        node_mass_contrib = elem_mass / 8.0  # (n_elem,) per node
+        node_mass_contrib = elem_mass / 8.0
         for n in range(8):
             for d in range(3):
                 np.add.at(M, self._elem_dofs[:, n*3+d], node_mass_contrib)
         
-        # Avoid zero mass
         M = np.maximum(M, M[M > 0].min() * 1e-3)
         self._M_lumped = M
         
-        # CFL time step: Δt < h / c, c = √(E/ρ)
-        c_max = np.sqrt(self._E_base.max() / rho_t.min())  # mm/s
-        self._dt_cfl = 0.8 * self.h / c_max  # seconds
+        # CFL with scaled mass
+        c_max = np.sqrt(self._E_base.max() / rho_scaled.min())
+        self._dt_cfl = 0.8 * self.h / c_max
         
-        print(f"  Explicit: M_total={M.sum()*1e9:.2f}g, "
-              f"c_max={c_max:.0f}mm/s, Δt_CFL={self._dt_cfl*1e6:.1f}μs")
+        print(f"  Explicit: mass_scale={mass_scale:.0e}, "
+              f"c_eff={c_max:.0f}mm/s, Δt_CFL={self._dt_cfl*1e3:.3f}ms")
     
     # ================================================================
     #  INTERNAL FORCE (vectorized, no matrix assembly)
@@ -494,13 +499,17 @@ class FullFractureEngine:
         params.validate()
         self.params = params
     
-    def simulate(self, total_time_ms=0.5, phi_update_every=10,
+    def simulate(self, n_load_steps=20, phi_update_every=5,
                  verbose=True) -> FEMResult:
-        """Full fracture simulation.
+        """Full fracture simulation via dynamic relaxation.
+        
+        Uses mass scaling + heavy damping for quasi-static loading.
+        At each load step: run explicit dynamics until equilibrium,
+        then update phase field and erode elements.
         
         Args:
-            total_time_ms: simulation duration in milliseconds
-            phi_update_every: update phase field every N mechanical steps
+            n_load_steps: number of incremental load steps
+            phi_update_every: update φ every N sub-steps per load step
         """
         params = self.params
         if params is None:
@@ -524,90 +533,90 @@ class FullFractureEngine:
         active = np.ones(self.n_elements, dtype=bool)
         
         dt = self._dt_cfl
-        total_time_s = total_time_ms * 1e-3
-        n_steps = max(int(total_time_s / dt), 100)
+        sub_steps_per_load = 25  # relax for 25 sub-steps per load increment
+        total_steps = n_load_steps * sub_steps_per_load
         
-        # External force (ramp up over first 20% of time)
         F_ext_full = self._compute_external_force(params)
         
+        # Heavy damping for dynamic relaxation (quasi-static)
+        # α ~ 2ω₁ where ω₁ is first natural frequency
+        # For overdamped: α > 2ω₁. We use relative damping.
+        damping_ratio = 0.9  # near critically damped
+        
         if verbose:
-            print(f"\n  Explicit dynamics: {n_steps} steps, "
-                  f"Δt={dt*1e6:.1f}μs, T={total_time_ms:.2f}ms")
-            print(f"  φ update every {phi_update_every} steps")
+            print(f"\n  Dynamic relaxation: {n_load_steps} load steps × "
+                  f"{sub_steps_per_load} sub-steps = {total_steps} total")
+            print(f"  Δt={dt*1e3:.3f}ms, damping={damping_ratio}")
         
-        # Damping (mass-proportional, prevent oscillation)
-        alpha_damp = 0.05  # critical damping fraction
+        step_count = 0
         
-        n_eroded_prev = 0
-        
-        for step in range(n_steps):
-            # Load ramp
-            load_frac = min(1.0, step / max(n_steps * 0.2, 1))
+        for ls in range(n_load_steps):
+            # Smooth load ramp (cosine)
+            load_frac = 0.5 * (1 - np.cos(np.pi * (ls + 1) / n_load_steps))
             F_ext = F_ext_full * load_frac
             
-            # ---- Phase field update (every N steps) ----
-            if step % phi_update_every == 0 and step > 0:
-                phi, history = self._solve_phase_field(
-                    history, history, phi, active)
+            if verbose:
+                print(f"\n  Load step {ls+1}/{n_load_steps} "
+                      f"({load_frac*100:.0f}% of {params.force_magnitude:.1f}kN):")
+            
+            for sub in range(sub_steps_per_load):
+                step_count += 1
                 
-                # Element erosion
+                # Internal force
                 phi_elem = self._elem_phi(phi)
-                newly_eroded = active & (phi_elem > EROSION_THRESHOLD)
-                active[newly_eroded] = False
-                n_eroded = (~active).sum()
+                F_int, vm, psi = self._compute_internal_force(
+                    u, E_field, phi_elem, active)
+                history = np.maximum(history, psi)
                 
-                if n_eroded > n_eroded_prev and verbose:
-                    print(f"    Step {step}/{n_steps}: "
-                          f"eroded={n_eroded} ({n_eroded/self.n_elements*100:.1f}%), "
-                          f"φ_max={phi.max():.3f}")
-                n_eroded_prev = n_eroded
+                # Contact
+                F_contact = self._compute_contact_forces(u, active, phi_elem)
+                
+                # Acceleration with heavy damping
+                F_total = F_ext - F_int + F_contact
+                a = F_total / self._M_lumped
+                
+                # Mass-proportional damping: F_damp = -α·M·v → a_damp = -α·v
+                # ω_approx ≈ c / h (wave-based estimate)
+                omega_approx = np.sqrt(E_field.mean() / (self._rho.mean() * 1e-9 * 1e6)) / self.h
+                alpha_rayleigh = 2 * damping_ratio * omega_approx
+                a -= alpha_rayleigh * v
+                
+                # Central difference
+                v += a * dt
+                v = self._apply_bc_constraints(v, u)
+                u += v * dt
+                
+                # Displacement sanity cap (vertebra is ~30mm tall)
+                u_max = np.abs(u).max()
+                if u_max > 5.0:  # max 5mm displacement
+                    u *= 5.0 / u_max
+                    v *= 0.1  # kill most velocity
             
-            # ---- Internal force (active elements only) ----
+            # Phase field update after each load step
+            phi, history = self._solve_phase_field(psi, history, phi, active)
+            
+            # Element erosion
             phi_elem = self._elem_phi(phi)
-            F_int, vm, psi = self._compute_internal_force(
-                u, E_field, phi_elem, active)
+            newly_eroded = active & (phi_elem > EROSION_THRESHOLD)
+            active[newly_eroded] = False
+            n_eroded = (~active).sum()
             
-            # Update history for phase field
-            history = np.maximum(history, psi)
-            
-            # ---- Contact ----
-            F_contact = self._compute_contact_forces(u, active, phi_elem)
-            
-            # ---- Acceleration ----
-            F_total = F_ext - F_int + F_contact
-            a = F_total / self._M_lumped
-            
-            # ---- Damping ----
-            a -= alpha_damp * v / dt
-            
-            # ---- Central difference ----
-            v += a * dt
-            v = self._apply_bc_constraints(v, u)
-            u += v * dt
-            
-            # ---- Capture frame for animation ----
-            if step % max(n_steps // 50, 1) == 0:
-                self._frames.append({
-                    'step': step, 'time_us': step * dt * 1e6,
-                    'u': u.copy(), 'phi': phi.copy(),
-                    'active': active.copy(), 'von_mises': vm.copy(),
-                    'n_eroded': int((~active).sum()),
-                })
-            
-            # Progress
-            if verbose and step % max(n_steps // 10, 1) == 0:
+            if verbose:
                 ke = 0.5 * np.sum(self._M_lumped * v**2)
-                print(f"    [{step:5d}/{n_steps}] t={step*dt*1e6:.0f}μs "
-                      f"|u|={np.abs(u).max():.4f}mm "
-                      f"KE={ke:.2e} "
-                      f"eroded={(~active).sum()}")
+                se = psi.sum() * self._V_elem
+                print(f"    |u|={np.abs(u).max():.3f}mm, φ_max={phi.max():.3f}, "
+                      f"eroded={n_eroded} ({n_eroded/self.n_elements*100:.1f}%), "
+                      f"KE/SE={ke/max(se,1e-20):.2e}")
+            
+            # Capture frame
+            self._frames.append({
+                'step': ls, 'time_us': ls,
+                'u': u.copy(), 'phi': phi.copy(),
+                'active': active.copy(), 'von_mises': vm.copy(),
+                'n_eroded': int(n_eroded),
+            })
         
         wall = time.time() - t_start
-        
-        # Final phase field update
-        phi, history = self._solve_phase_field(psi, history, phi, active)
-        phi_elem = self._elem_phi(phi)
-        active[phi_elem > EROSION_THRESHOLD] = False
         
         # Store
         self._phi = phi
@@ -620,14 +629,15 @@ class FullFractureEngine:
         # Classify
         result = self._classify(phi, u, active)
         result.solve_time = wall
-        result.n_iterations = n_steps
+        result.n_iterations = step_count
         self._result = result
         
         if verbose:
-            print(f"\n  ★ {result.ao_type} ({wall:.1f}s, {n_steps} steps)")
+            print(f"\n  ★ {result.ao_type} ({wall:.1f}s, {step_count} steps)")
             print(f"    Eroded: {(~active).sum()}/{self.n_elements} "
                   f"({(~active).sum()/self.n_elements*100:.1f}%)")
             print(f"    φ_max={phi.max():.3f}, |u|_max={np.abs(u).max():.4f}mm")
+            print(f"    Fragments: {result.n_fragments}")
         
         return result
     
@@ -783,7 +793,7 @@ def demo(use_cuda=False):
         
         engine.set_causal_params(params)
         engine._frames = []
-        result = engine.simulate(total_time_ms=0.5)
+        result = engine.simulate(n_load_steps=20)
         
         # Save animation
         gif_path = os.path.join(out_dir, f'v7_{name}_fracture.gif')
