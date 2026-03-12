@@ -1,79 +1,78 @@
-# WiseSpine: Physics-Based Spine Fracture Simulation for Robust Segmentation
+# WiseSpine: CT-Driven Vertebral Fracture Simulation
 
-**Physically Grounded Fracture Simulation & Adversarial Training for Robust Medical Image Segmentation**
+**Phase Field FEM + Neural Operator for Real-Time Fracture Prediction**
 
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![CUDA](https://img.shields.io/badge/CUDA-GPU%20Accelerated-green.svg)]()
 
 ---
 
-## Motivation
+## Demo
 
-Spine segmentation models (TotalSegmentator, nnU-Net) achieve Dice > 0.95 on normal anatomy but **degrade 10–30% on abnormal cases** — fractures, surgical hardware, and deformities. Existing augmentation approaches (random noise, GAN-based) lack physical plausibility and cannot reproduce the full spectrum of real clinical abnormalities.
+![Burst Fracture Simulation — AO A4](fracture_v8_demo/v8_burst_fracture.gif)
 
-## Core Idea
-
-WiseSpine addresses this gap through **physics-based simulation** of spine abnormalities that are grounded in biomechanical principles:
-
-1. **Fracture Simulation** — Grid-based P2G/G2P stress transfer with Continuum Damage Mechanics (CDM), producing AO-classified fracture types (A1–A4) on real VerSe CT data
-2. **Surgical Artifact Synthesis** — Pedicle screw placement, metal artifact simulation (streak, blooming, beam hardening)
-3. **Adversarial RL** — Reinforcement learning agent that discovers optimal failure-inducing configurations
-4. **Causal Graph** — 16-node directed acyclic graph encoding the causal relationships between spine pathologies
-
-### What Makes This Different
-
-| Approach | Physics | Adversarial | Clinical Types | Integration |
-|----------|:-------:|:-----------:|:--------------:|:-----------:|
-| Random augmentation | - | - | - | - |
-| GAN-based synthesis | - | Yes | - | - |
-| FEM simulation | Yes (slow) | - | Some | - |
-| **WiseSpine** | **Yes (real-time)** | **Yes (RL)** | **AO A1–A4** | **All three** |
+> **Burst fracture simulation on real L4 vertebra (VerSe sub-verse503).** Left: 3D bone rotating under increasing axial load with phase field damage (beige→yellow→red). Right: Fragment separation with zoom-in 2D slices at crack center (Sagittal, Coronal, Axial).
 
 ---
 
-## Key Results
+## Overview
 
-### Fracture Simulation — AO Classification
+WiseSpine simulates vertebral fractures using a **phase field fracture** approach coupled with voxel-based FEM. The pipeline takes a clinical CT scan and produces:
 
-Physics-based fracture simulation on real L4 vertebra (VerSe sub-verse503), following AO Spine classification:
+1. **Crack propagation** — Phase field φ evolves from intact (φ=0) to fully cracked (φ=1)
+2. **Fragment detection** — Eroded elements form separated bone fragments  
+3. **AO classification** — Automatic A0–A4 classification based on damage metrics
+4. **3D visualization** — Animated GIF + static PNG with zoom-in panels
 
-| AO Type | Name | Mechanism | TS Dice Degradation | Clinical Stability |
-|---------|------|-----------|:-------------------:|-------------------|
-| A1 | Wedge Compression | Flexion-compression | ~1–2.5% | Stable |
-| A2 | Split Fracture | Coronal separation | ~2–7% | Potentially unstable |
-| A3 | Incomplete Burst | Axial compression | ~4–11% | Unstable |
-| A4 | Complete Burst | Explosive radial | ~9–23% | Highly unstable |
-
-![AO A1–A4 comparison: 3D mesh + stress diffusion + damage timeline](figs/v2_combined_comparison.png)
-
-### Surgical Artifact Impact on TotalSegmentator
-
-| Configuration | L1 Degradation | L2 Degradation | Average |
-|--------------|:--------------:|:--------------:|:-------:|
-| Screws only | 3.55% | **14.09%** | 8.82% |
-| Screws + Rod | 4.57% | **17.28%** | **10.93%** |
-| Multi-level | 2.20% | 3.84% | 3.02% |
-
-**Novel finding — Adjacent vertebra effect**: Hardware placed in L1 causes greater degradation in L2 (17.28%) than L1 itself, due to streak artifact propagation into the adjacent level.
-
----
-
-## Fracture Physics Engine
-
-The core simulation engine uses a particle-based approach with grid-based stress transfer:
+### Architecture
 
 ```
-Particle Sampling (50K) -> Region Classification (7 zones)
-  -> AO-Type Loading -> Grid P2G/G2P Stress (64^3, Jacobi relaxation)
-  -> CDM Damage Evolution -> Fragment Detection -> CT HU Mapping
+CT Volume (NIfTI)
+  → Voxel FEM Mesh (8-node hexahedral)
+  → Phase Field Fracture (staggered u-φ solver)
+    → Ku = F  (mechanical equilibrium, CG + Jacobi preconditioner)
+    → Kφ = Fφ (damage evolution, AT-1 energy decomposition)
+  → Fragment Detection (erosion → connected components)
+  → AO Classification (A0–A4)
+  → 3D Surface Rendering (marching cubes + matplotlib)
 ```
 
-Each AO fracture type has biomechanically-specific force configurations:
-- **A1 (Wedge)**: Anterior flexion-compression load
-- **A2 (Split)**: Coronal plane separation force
-- **A3 (Incomplete Burst)**: Axial compression with posterior constraint
-- **A4 (Complete Burst)**: 5-point explosive radial loading + retropulsion
+---
 
-For full technical details, see [docs/fracture_physics.md](docs/fracture_physics.md).
+## Simulation Results
+
+| Metric | Value |
+|--------|-------|
+| **AO Classification** | A4 (Burst, Complete) |
+| **Force** | 4.0 kN axial |
+| **Cracked Elements** | 36.2% (5234/14449) |
+| **Fragments** | 5 |
+| **Max Displacement** | 88 mm |
+| **Solve Time** | 169s (GPU, RTX 2080 Ti) |
+
+### Material Properties
+
+| Property | Cortical | Trabecular |
+|----------|----------|------------|
+| E (Young's modulus) | ~19,500 MPa | 1–500 MPa (BMD-based) |
+| Gc (Fracture toughness) | 5.0 N/mm | 1.0 N/mm |
+| ν (Poisson's ratio) | 0.3 | 0.3 |
+
+---
+
+## Quick Start
+
+```bash
+conda activate py311
+
+# Run fracture simulation + visualization
+python pipeline/modules/fracture_engine_v8.py --cuda
+
+# Output in fracture_v8_demo/:
+#   v8_burst_fracture.gif  — Animated fracture progression
+#   v8_burst_final.png     — Final state (2-view)
+#   v8_log.txt             — Full simulation log
+```
 
 ---
 
@@ -82,52 +81,62 @@ For full technical details, see [docs/fracture_physics.md](docs/fracture_physics
 ```
 wisespine/
 ├── pipeline/
-│   ├── run_batch_pipeline.py          # Full simulation orchestrator
-│   ├── simulate_scoliosis.py          # Scoliosis simulation
-│   ├── simulate_tumors.py             # Tumor synthesis
-│   ├── place_hardware_physics.py      # Pedicle screw placement
-│   ├── synthesize_artifacts_simple.py # Metal artifact synthesis
-│   ├── causal_graph.py                # Causal DAG (16 nodes, 19 edges)
-│   └── modules/
-│       ├── fracture_simulator_v2.py   # Core fracture physics engine (CDM)
-│       ├── ct_physics.py              # CT imaging physics
-│       ├── tumor_synthesis.py         # Lytic/blastic lesion generation
-│       ├── artifact_physics.py        # Metal artifact physics
-│       └── spine_deformation.py       # Scoliosis deformation
-├── analysis/                          # Validation & visualization scripts
-├── extensions/                        # Ligament, canal, disc, temporal simulation
-├── docs/
-│   ├── fracture_physics.md            # Fracture simulator technical docs
-│   ├── COMPREHENSIVE_REPORT.md        # Full project history & analysis
-│   └── fracture_reports/              # Per-AO-type detailed reports
-├── figs/                              # All figures
-└── VerSe/                             # VerSe dataset
+│   ├── modules/
+│   │   ├── fracture_engine_v6.py    # Core: Phase field FEM solver
+│   │   ├── fracture_engine_v8.py    # Hybrid: v6 + fragment dynamics + visualization
+│   │   ├── ct_physics.py            # CT imaging physics & material mapping
+│   │   ├── spine_deformation.py     # Spine geometry utilities
+│   │   └── tumor_synthesis.py       # Lesion synthesis (future)
+│   ├── causal_graph.py              # Causal DAG for pathology relationships
+│   └── run_batch_pipeline.py        # Batch orchestrator
+├── fracture_v8_demo/                # Latest simulation outputs
+│   ├── v8_burst_fracture.gif        # Fracture animation
+│   ├── v8_burst_final.png           # Final state render
+│   └── v8_log.txt                   # Simulation log
+├── VerSe/                           # VerSe dataset (CT volumes)
+├── docs/                            # Documentation
+├── figs/                            # Figures
+└── _archive/                        # Archived old versions
 ```
 
-## Documentation
+## Roadmap
 
-- **[docs/fracture_physics.md](docs/fracture_physics.md)** — Fracture simulator v2 architecture, CDM model, grid-based stress transfer
-- **[docs/fracture_reports/](docs/fracture_reports/)** — Per-AO-type reports (A1–A4) with clinical definitions, simulation logic, and visualizations
-- **[docs/COMPREHENSIVE_REPORT.md](docs/COMPREHENSIVE_REPORT.md)** — Full project evolution, phase history, and technical deep dive
+### Current (v8) — Proof of Concept ✅
+- Phase field fracture on voxel FEM (4mm resolution)
+- GPU-accelerated CG solver (CuPy)
+- 3D animated visualization with zoom-in panels
+- AO A0–A4 automatic classification
 
-## Quick Start
+### Next — Quantitative Accuracy
+- [ ] **FEniCSx integration** — Validated FEM solver with Lagrange multiplier BCs
+- [ ] **Resolution upgrade** — 0.5mm mesh for accurate crack paths
+- [ ] **FNO (Fourier Neural Operator)** — Learn coarse→fine mapping for real-time inference
+- [ ] **Clinical validation** — Retrospective CT comparison (pre/post fracture)
 
-```bash
-conda activate py311
-cd /gscratch/scrubbed/june0604/wisespine
+### Goal
+> CT scan → real-time (10s) fracture prediction with clinical-grade accuracy,  
+> enabling scenario-based "what-if" analysis for surgical planning.
 
-# Generate AO fracture visualizations
-python docs/fracture_reports/generate_visualizations.py
+---
 
-# Run fracture simulation on real vertebra
-python pipeline/modules/fracture_simulator_v2.py --test-full-physics
+## Technical Details
 
-# Generate 3D mesh + CT combined views
-python pipeline/modules/_gen_3d_mesh_fracture.py
+### Phase Field Model
+- **AT-1** energy functional with spectral strain decomposition
+- Damage irreversibility: φ(t+1) ≥ φ(t)
+- Degradation: g(φ) = (1-φ)² + k, k=0.05 (residual stiffness)
+- Regularization length: l₀ = 4.15mm
 
-# Run full batch pipeline (scoliosis + tumor + hardware + artifacts)
-python pipeline/run_batch_pipeline.py
-```
+### FEM Solver
+- 8-node hexahedral voxel elements
+- Staggered scheme: 5 iterations per load step, 20 load steps
+- GPU solver: CuPy CG with Jacobi preconditioner (tol=1e-8)
+- Boundary conditions: Parabolic contact pressure (superior), fixed inferior
+
+### References
+- Miehe et al. (2010) — Phase field fracture framework
+- Keller (1994) — BMD → E mapping for bone
+- Nalla et al. (2003) — Fracture toughness of cortical bone
 
 ---
 

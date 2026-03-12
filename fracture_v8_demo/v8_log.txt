@@ -1,0 +1,673 @@
+
+============================================================
+  Scenario: burst
+============================================================
+  CUDA: NVIDIA GeForce RTX 2080 Ti
+  Mesh: 14449 elements, 124200 nodes, DOF_u=372600, DOF_φ=124200 (0.0s)
+  Materials: E=[1, 19508] MPa, Gc=[1.000, 1.082] N/mm
+  Phase field: l₀=4.15mm (0.0s)
+  Non-bone nodes (φ=0 constrained): 105444
+  v8 Hybrid ready: 14449 elements
+
+============================================================
+  STAGE 1: Implicit Phase Field Crack
+============================================================
+
+  Load step 1/20 (5% of 4.0 kN):
+      K_u assembled (0.7s)
+        [u] Solving 372600 DOFs... 1.2s
+      ψ⁺ computed (0.0s), max=0.01
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.2s) φ(0.0s) | Δu=0.2109 Δφ=0.0097 | φ_max=0.010 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.01
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(0.8s) φ(0.0s) | Δu=0.0011 Δφ=0.0002 | φ_max=0.010 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.01
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(0.8s) φ(0.0s) | Δu=0.0000 Δφ=0.0000 | φ_max=0.010 cracked=0
+    Converged.
+
+  Load step 2/20 (10% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.03
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(0.8s) φ(0.0s) | Δu=0.2120 Δφ=0.0288 | φ_max=0.039 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.03
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(0.8s) φ(0.0s) | Δu=0.0066 Δφ=0.0024 | φ_max=0.041 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.03
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(0.8s) φ(0.0s) | Δu=0.0004 Δφ=0.0002 | φ_max=0.041 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.03
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(0.8s) φ(0.0s) | Δu=0.0000 Δφ=0.0000 | φ_max=0.041 cracked=0
+    Converged.
+
+  Load step 3/20 (15% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.06
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(0.8s) φ(0.0s) | Δu=0.2155 Δφ=0.0481 | φ_max=0.089 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.07
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(0.8s) φ(0.0s) | Δu=0.0173 Δφ=0.0093 | φ_max=0.099 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.07
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(0.8s) φ(0.0s) | Δu=0.0026 Δφ=0.0018 | φ_max=0.100 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.07
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(0.8s) φ(0.0s) | Δu=0.0004 Δφ=0.0003 | φ_max=0.101 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.07
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(0.8s) φ(0.0s) | Δu=0.0001 Δφ=0.0001 | φ_max=0.101 cracked=0
+    Converged.
+
+  Load step 4/20 (20% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.13
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(0.8s) φ(0.0s) | Δu=0.2223 Δφ=0.0682 | φ_max=0.169 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.14
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(0.8s) φ(0.0s) | Δu=0.0356 Δφ=0.0248 | φ_max=0.194 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.15
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(0.8s) φ(0.0s) | Δu=0.0103 Δφ=0.0091 | φ_max=0.203 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.15
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(0.8s) φ(0.0s) | Δu=0.0035 Δφ=0.0034 | φ_max=0.206 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.16
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(0.8s) φ(0.0s) | Δu=0.0012 Δφ=0.0012 | φ_max=0.208 cracked=0
+
+  Load step 5/20 (25% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.24
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(0.8s) φ(0.0s) | Δu=0.2354 Δφ=0.0901 | φ_max=0.298 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.30
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(0.8s) φ(0.0s) | Δu=0.0677 Δφ=0.0554 | φ_max=0.353 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.33
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(0.8s) φ(0.0s) | Δu=0.0352 Δφ=0.0357 | φ_max=0.389 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.36
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(0.8s) φ(0.0s) | Δu=0.0220 Δφ=0.0241 | φ_max=0.413 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.37
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(0.8s) φ(0.0s) | Δu=0.0148 Δφ=0.0169 | φ_max=0.430 cracked=0
+
+  Load step 6/20 (30% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.56
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(0.8s) φ(0.0s) | Δu=0.2743 Δφ=0.1196 | φ_max=0.549 cracked=0
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=0.76
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(0.8s) φ(0.0s) | Δu=0.1475 Δφ=0.1117 | φ_max=0.661 cracked=8
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.8s
+      ψ⁺ computed (0.0s), max=1.08
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(0.8s) φ(0.0s) | Δu=0.1398 Δφ=0.1021 | φ_max=0.763 cracked=22
+      K_u assembled (0.7s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=1.64
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(0.9s) φ(0.0s) | Δu=0.1576 Δφ=0.0959 | φ_max=0.852 cracked=40
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=2.54
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(0.9s) φ(0.0s) | Δu=0.1907 Δφ=0.1029 | φ_max=0.918 cracked=70
+
+  Load step 7/20 (35% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=5.23
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(0.9s) φ(0.0s) | Δu=0.6271 Δφ=0.1867 | φ_max=0.977 cracked=146
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=10.35
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(0.9s) φ(0.0s) | Δu=0.7028 Δφ=0.2003 | φ_max=1.000 cracked=252
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=17.27
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(0.9s) φ(0.0s) | Δu=1.0008 Δφ=0.2008 | φ_max=1.000 cracked=380
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=24.29
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(0.9s) φ(0.0s) | Δu=1.1188 Δφ=0.1851 | φ_max=1.000 cracked=535
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=30.49
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(0.9s) φ(0.0s) | Δu=0.9859 Δφ=0.1589 | φ_max=1.000 cracked=693
+
+  Load step 8/20 (40% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=46.49
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(0.9s) φ(0.0s) | Δu=1.7446 Δφ=0.1705 | φ_max=1.000 cracked=876
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=60.68
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(0.9s) φ(0.0s) | Δu=1.5616 Δφ=0.1950 | φ_max=1.000 cracked=1078
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=73.42
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(0.9s) φ(0.0s) | Δu=1.8668 Δφ=0.1878 | φ_max=1.000 cracked=1396
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 0.9s
+      ψ⁺ computed (0.0s), max=86.96
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(0.9s) φ(0.0s) | Δu=2.6192 Δφ=0.1967 | φ_max=1.000 cracked=1689
+      K_u assembled (0.7s)
+        [u] Solving 372600 DOFs... 1.0s
+      ψ⁺ computed (0.0s), max=101.96
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.0s) φ(0.0s) | Δu=3.6071 Δφ=0.2183 | φ_max=1.000 cracked=2088
+
+  Load step 9/20 (45% of 4.0 kN):
+      K_u assembled (0.7s)
+        [u] Solving 372600 DOFs... 1.0s
+      ψ⁺ computed (0.0s), max=146.53
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.0s) φ(0.0s) | Δu=6.2590 Δφ=0.2153 | φ_max=1.000 cracked=2606
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.0s
+      ψ⁺ computed (0.0s), max=166.57
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.0s) φ(0.0s) | Δu=4.8759 Δφ=0.2195 | φ_max=1.000 cracked=3053
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.0s
+      ψ⁺ computed (0.0s), max=179.77
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.0s) φ(0.0s) | Δu=5.7520 Δφ=0.2148 | φ_max=1.000 cracked=3318
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.0s
+      ψ⁺ computed (0.0s), max=189.28
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.0s) φ(0.0s) | Δu=10.7218 Δφ=0.2084 | φ_max=1.000 cracked=3524
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=196.35
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=6.1004 Δφ=0.1708 | φ_max=1.000 cracked=3657
+
+  Load step 10/20 (50% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=248.63
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=6.8620 Δφ=0.1528 | φ_max=1.000 cracked=3831
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=256.26
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=1.6314 Δφ=0.1356 | φ_max=1.000 cracked=3954
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=260.74
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=1.1363 Δφ=0.1171 | φ_max=1.000 cracked=4048
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=263.67
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=1.3963 Δφ=0.1069 | φ_max=1.000 cracked=4127
+      K_u assembled (0.7s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=265.65
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=1.6839 Δφ=0.1099 | φ_max=1.000 cracked=4190
+
+  Load step 11/20 (55% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=323.13
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=4.3919 Δφ=0.1403 | φ_max=1.000 cracked=4306
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=326.36
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=1.9570 Δφ=0.1733 | φ_max=1.000 cracked=4396
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=327.94
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=3.8509 Δφ=0.1591 | φ_max=1.000 cracked=4453
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=329.01
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=7.0630 Δφ=0.1221 | φ_max=1.000 cracked=4507
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=329.73
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=3.0823 Δφ=0.1272 | φ_max=1.000 cracked=4551
+
+  Load step 12/20 (60% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=392.96
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=4.3184 Δφ=0.1491 | φ_max=1.000 cracked=4609
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=394.94
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=0.3872 Δφ=0.1275 | φ_max=1.000 cracked=4647
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=395.63
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=0.3345 Δφ=0.0971 | φ_max=1.000 cracked=4667
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=396.03
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=0.2505 Δφ=0.0734 | φ_max=1.000 cracked=4687
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=396.29
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=0.1100 Δφ=0.0515 | φ_max=1.000 cracked=4699
+
+  Load step 13/20 (65% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=465.28
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=4.3153 Δφ=0.0637 | φ_max=1.000 cracked=4735
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=466.82
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=0.2077 Δφ=0.0467 | φ_max=1.000 cracked=4754
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=467.33
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=0.1022 Δφ=0.0313 | φ_max=1.000 cracked=4769
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=467.64
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=0.0714 Δφ=0.0217 | φ_max=1.000 cracked=4792
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=467.85
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=0.0492 Δφ=0.0163 | φ_max=1.000 cracked=4796
+
+  Load step 14/20 (70% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=542.75
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=4.3329 Δφ=0.0426 | φ_max=1.000 cracked=4829
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=544.12
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=0.1673 Δφ=0.0364 | φ_max=1.000 cracked=4863
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=544.61
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=0.0960 Δφ=0.0269 | φ_max=1.000 cracked=4876
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=544.91
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=0.0680 Δφ=0.0188 | φ_max=1.000 cracked=4882
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=545.12
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=0.0474 Δφ=0.0135 | φ_max=1.000 cracked=4891
+
+  Load step 15/20 (75% of 4.0 kN):
+      K_u assembled (0.7s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=625.94
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=4.3519 Δφ=0.0357 | φ_max=1.000 cracked=4921
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=627.18
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=0.1751 Δφ=0.0301 | φ_max=1.000 cracked=4936
+      K_u assembled (0.7s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=627.64
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=0.1390 Δφ=0.0219 | φ_max=1.000 cracked=4946
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=627.92
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=0.1114 Δφ=0.0161 | φ_max=1.000 cracked=4957
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=628.11
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=0.0883 Δφ=0.0126 | φ_max=1.000 cracked=4962
+
+  Load step 16/20 (80% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=714.80
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=4.3666 Δφ=0.0384 | φ_max=1.000 cracked=4984
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=715.92
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=0.2859 Δφ=0.0388 | φ_max=1.000 cracked=5012
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=716.33
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=0.2887 Δφ=0.0382 | φ_max=1.000 cracked=5024
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=716.59
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=0.3004 Δφ=0.0379 | φ_max=1.000 cracked=5034
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=716.75
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=0.3234 Δφ=0.0385 | φ_max=1.000 cracked=5044
+
+  Load step 17/20 (85% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=809.26
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=4.3783 Δφ=0.0683 | φ_max=1.000 cracked=5085
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=810.28
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=0.9450 Δφ=0.0785 | φ_max=1.000 cracked=5112
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=810.66
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=1.3966 Δφ=0.0778 | φ_max=1.000 cracked=5124
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=810.89
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=2.0330 Δφ=0.0724 | φ_max=1.000 cracked=5133
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=811.04
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=2.1750 Δφ=0.0524 | φ_max=1.000 cracked=5142
+
+  Load step 18/20 (90% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=909.38
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=4.3887 Δφ=0.0438 | φ_max=1.000 cracked=5171
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=910.32
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=1.3069 Δφ=0.0232 | φ_max=1.000 cracked=5192
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=910.68
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=0.4558 Δφ=0.0180 | φ_max=1.000 cracked=5205
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=910.92
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=0.1669 Δφ=0.0140 | φ_max=1.000 cracked=5212
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=911.07
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=0.0704 Δφ=0.0107 | φ_max=1.000 cracked=5218
+
+  Load step 19/20 (95% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=1015.23
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=4.3975 Δφ=0.0266 | φ_max=1.000 cracked=5242
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=1016.13
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=0.2632 Δφ=0.0240 | φ_max=1.000 cracked=5256
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=1016.50
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=0.1039 Δφ=0.0189 | φ_max=1.000 cracked=5262
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=1016.75
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=0.0505 Δφ=0.0147 | φ_max=1.000 cracked=5272
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=1016.91
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=0.0270 Δφ=0.0114 | φ_max=1.000 cracked=5275
+
+  Load step 20/20 (100% of 4.0 kN):
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=1126.91
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 1: u(1.1s) φ(0.0s) | Δu=4.4057 Δφ=0.0263 | φ_max=1.000 cracked=5301
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=1127.78
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 2: u(1.1s) φ(0.0s) | Δu=0.2125 Δφ=0.0226 | φ_max=1.000 cracked=5322
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=1128.16
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 3: u(1.1s) φ(0.0s) | Δu=0.0798 Δφ=0.0173 | φ_max=1.000 cracked=5339
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=1128.40
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 4: u(1.1s) φ(0.0s) | Δu=0.0390 Δφ=0.0128 | φ_max=1.000 cracked=5350
+      K_u assembled (0.6s)
+        [u] Solving 372600 DOFs... 1.1s
+      ψ⁺ computed (0.0s), max=1128.57
+      K_φ assembled (0.1s)
+        [φ] Solving 124200 DOFs... 0.0s
+    Stagger 5: u(1.1s) φ(0.0s) | Δu=0.0210 Δφ=0.0092 | φ_max=1.000 cracked=5355
+
+  ★ A4 (169.1s, 97 iters)
+    φ_max=1.000, cracked elements: 5355/14449
+AO Type: A4 (conf=1.00)
+  Max von Mises: 3710.8 MPa
+  Max displacement: 88.081 mm
+  Yielded: 5355/14449 (37.1%)
+  Post. wall damage: 0.0%
+  Ant. height loss: 4.6%
+  Post. height loss: 0.0%
+  Canal compromise: 80.6%
+  Fragments: 4491
+  Solve time: 169.1s (97 iters)
+
+  Stage 1 complete: φ_max=1.000, cracked (>0.7): 5234/14449 (36.2%)
+
+============================================================
+  STAGE 2: Fragment Dynamics
+============================================================
+  Eroded: 5234/14449 (36.2%)
+  Fragments: 5
+    Fragment 1: 210 voxels, offset=0.9mm
+    Fragment 2: 51 voxels, offset=0.9mm
+    Fragment 3: 8313 voxels, offset=0.0mm
+    Fragment 4: 270 voxels, offset=0.9mm
+    Fragment 5: 371 voxels, offset=0.9mm
+  Surface mesh: 8130 verts, 16260 tris
+  Part 1: Rotating + loading...
+  Part 2: Final + zoom panels...
+  Saved: /mmfs1/gscratch/scrubbed/june0604/wisespine/pipeline/modules/../../fracture_v8_demo/v8_burst_fracture.gif (25 frames)
+  Saved: /mmfs1/gscratch/scrubbed/june0604/wisespine/pipeline/modules/../../fracture_v8_demo/v8_burst_final.png
+
+Outputs saved to /mmfs1/gscratch/scrubbed/june0604/wisespine/pipeline/modules/../../fracture_v8_demo/
+Log: /mmfs1/gscratch/scrubbed/june0604/wisespine/pipeline/modules/../../fracture_v8_demo/v8_log.txt

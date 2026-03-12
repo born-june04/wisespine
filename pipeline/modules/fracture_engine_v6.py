@@ -53,9 +53,9 @@ from fracture_engine_v5 import (
 # Phase field constants
 # Unit conversion: 1 J/m² = 1 N/m = 10⁻³ N/mm
 # FEM units: mm, N, MPa(=N/mm²), so Gc in N/mm
-GC_CORTICAL = 3.0       # N/mm (= 3000 J/m²; Nalla 2003)
-GC_TRABECULAR = 0.3     # N/mm (= 300 J/m²; estimate for cancellous)
-RESIDUAL_STIFFNESS = 1e-6   # k in g(φ) = (1-φ)² + k
+GC_CORTICAL = 5.0       # N/mm (= 5000 J/m²; upper range Nalla 2003)
+GC_TRABECULAR = 1.0     # N/mm (= 1000 J/m²; higher to resist over-cracking)
+RESIDUAL_STIFFNESS = 0.05    # k in g(φ) = (1-φ)² + k  (5% residual limits max displacement)
 
 
 # ============================================================================
@@ -458,27 +458,38 @@ class PhaseFieldEngine:
     # ================================================================
     
     def _solve_sparse(self, K, F, label=""):
-        """Solve Kx=F using GPU or CPU."""
+        """Solve Kx=F using GPU or CPU.
+        
+        GPU: CG + Jacobi preconditioner for both u and φ.
+        (spsolve removed — it silently returns NaN on ill-conditioned K.)
+        """
         t0 = time.time()
         n = K.shape[0]
         print(f"        [{label}] Solving {n} DOFs...", end='', flush=True)
+        
+        x = None
+        
         if self.use_cuda:
             Kg = self._cp_sp.csr_matrix(K)
             Fg = self._cp.array(F)
-            try:
-                # Use CG for φ system (SPD, faster) and spsolve for u
-                if label == "φ":
-                    xg, info = self._cp_spla.cg(Kg, Fg, maxiter=3000, tol=1e-8)
-                else:
-                    xg = self._cp_spla.spsolve(Kg, Fg)
-                x = self._cp.asnumpy(xg)
-            except:
-                xg, _ = self._cp_spla.cg(Kg, Fg, maxiter=5000, tol=1e-8)
-                x = self._cp.asnumpy(xg)
+            
+            # Jacobi preconditioner for both systems
+            diag = Kg.diagonal()
+            diag = self._cp.where(self._cp.abs(diag) > 1e-20, diag, 
+                                  self._cp.ones_like(diag))
+            M_inv = 1.0 / diag
+            def jacobi_precond(r):
+                return M_inv * r
+            M = self._cp_spla.LinearOperator(Kg.shape, jacobi_precond)
+            
+            if label == "φ":
+                xg, info = self._cp_spla.cg(Kg, Fg, M=M, maxiter=3000, tol=1e-8)
+            else:
+                xg, info = self._cp_spla.cg(Kg, Fg, M=M, maxiter=5000, tol=1e-8)
+            x = self._cp.asnumpy(xg)
         else:
             try:
                 if label == "φ":
-                    # φ system is SPD → CG is optimal
                     x, info = spla.cg(K, F, maxiter=3000, tol=1e-8)
                     if info != 0: x = spla.spsolve(K, F)
                 else:
@@ -488,6 +499,12 @@ class PhaseFieldEngine:
                     if info != 0: x = spla.spsolve(K, F)
             except:
                 x = spla.spsolve(K, F)
+        
+        # NaN safety net
+        if np.any(np.isnan(x)):
+            print(" [NaN→zero]", end='', flush=True)
+            x = np.nan_to_num(x, nan=0.0)
+        
         dt = time.time() - t0
         print(f" {dt:.1f}s")
         return x, dt

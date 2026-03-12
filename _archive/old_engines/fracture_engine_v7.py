@@ -52,7 +52,8 @@ from fracture_engine_v5 import (
 GC_CORTICAL = 3.0       # N/mm (= 3000 J/m²)
 GC_TRABECULAR = 0.3     # N/mm (= 300 J/m²)
 RESIDUAL_K = 1e-6        # residual stiffness in g(φ)
-EROSION_THRESHOLD = 0.95  # φ above this → element removed
+EROSION_THRESHOLD = 0.5   # φ_max above this → element removed
+                          # Note: mesh resolution h/l₀=0.4 limits φ_max ≈ 0.91
 
 
 class FullFractureEngine:
@@ -244,9 +245,8 @@ class FullFractureEngine:
         rho_t = self._rho * 1e-9  # tonnes/mm³
         
         # MASS SCALING: multiply by factor to make Δt practical
-        # Without scaling: Δt ≈ 0.2μs, need 500000 steps for 0.1ms
-        # With scaling 1e6: Δt ≈ 0.2ms, need 500 steps for 0.1ms
-        mass_scale = 1e6
+        # Lower scaling = more accurate quasi-static but smaller Δt
+        mass_scale = 1e5
         rho_scaled = rho_t * mass_scale
         
         elem_mass = rho_scaled * self._V_elem
@@ -329,7 +329,12 @@ class FullFractureEngine:
     # ================================================================
     
     def _solve_phase_field(self, psi_plus, history, phi_prev, active):
-        """Solve φ implicitly. Only called every N mechanical steps."""
+        """Solve φ implicitly on BONE-ONLY reduced system.
+        
+        Previous approach used penalty BCs on ~200k non-bone nodes which
+        destroyed the condition number. Now we assemble only for bone nodes
+        and map back to global indices.
+        """
         Gc = self._Gc
         l0 = self._l0
         H = np.maximum(psi_plus, history)
@@ -347,41 +352,50 @@ class FullFractureEngine:
         phi_dofs = self._elem_nodes[active]
         d_c = diff_coeff[active]; r_c = react_coeff[active]; rh_c = rhs_coeff[active]
         
-        rows = phi_dofs[:, li_f]
-        cols = phi_dofs[:, lj_f]
+        # Build REDUCED system (bone nodes only)
+        bone_nodes = np.unique(phi_dofs.ravel())
+        n_bone = len(bone_nodes)
+        
+        # Global → local mapping
+        g2l = np.full(self._n_dof_phi, -1, dtype=np.int64)
+        g2l[bone_nodes] = np.arange(n_bone)
+        
+        # Local element connectivity
+        phi_dofs_local = g2l[phi_dofs]  # (n_active, 8) in local numbering
+        
+        rows = phi_dofs_local[:, li_f]
+        cols = phi_dofs_local[:, lj_f]
         vals = d_c[:, None] * Kd_flat[None, :] + r_c[:, None] * Km_flat[None, :]
         
         K_phi = sp.coo_matrix(
             (vals.ravel(), (rows.ravel(), cols.ravel())),
-            shape=(self._n_dof_phi, self._n_dof_phi)).tocsr()
+            shape=(n_bone, n_bone)).tocsr()
         
         N_int = self._K_mass_ref.sum(axis=1)
-        F_phi = np.zeros(self._n_dof_phi)
+        F_phi = np.zeros(n_bone)
         rhs_vals = rh_c[:, None] * N_int[None, :]
-        np.add.at(F_phi, phi_dofs, rhs_vals)
+        np.add.at(F_phi, phi_dofs_local, rhs_vals)
         
-        # BCs: non-bone nodes
-        if len(self._non_bone_nodes) > 0:
-            d_max = K_phi.diagonal().max()
-            if d_max > 0:
-                PENALTY = d_max * 1e6
-                diag = K_phi.diagonal()
-                diag[self._non_bone_nodes] += PENALTY
-                K_phi.setdiag(diag)
-                F_phi[self._non_bone_nodes] = 0.0
+        # Warm start from previous solution (mapped to local)
+        x0 = phi_prev[bone_nodes]
         
-        # Solve (CG, SPD)
+        # Solve reduced system (no penalty BCs needed!)
         if self.use_cuda:
             Kg = self._cp_sp.csr_matrix(K_phi)
             Fg = self._cp.array(F_phi)
-            xg, _ = self._cp_spla.cg(Kg, Fg, maxiter=2000, tol=1e-7)
-            phi = self._cp.asnumpy(xg)
-        else:
-            phi, info = spla.cg(K_phi, F_phi, maxiter=2000, tol=1e-7)
+            x0g = self._cp.array(x0)
+            xg, info = self._cp_spla.cg(Kg, Fg, x0=x0g, maxiter=3000, tol=1e-8)
             if info != 0:
-                phi = spla.spsolve(K_phi, F_phi)
+                xg = self._cp_spla.spsolve(Kg, Fg)
+            phi_local = self._cp.asnumpy(xg)
+        else:
+            phi_local, info = spla.cg(K_phi, F_phi, x0=x0, maxiter=3000, tol=1e-8)
+            if info != 0:
+                phi_local = spla.spsolve(K_phi, F_phi)
         
-        phi = np.clip(phi, 0, 1)
+        # Map back to global
+        phi = np.zeros(self._n_dof_phi)
+        phi[bone_nodes] = np.clip(phi_local, 0, 1)
         phi = np.maximum(phi, phi_prev)  # irreversibility
         
         return phi, H
@@ -480,7 +494,12 @@ class FullFractureEngine:
     # ================================================================
     
     def _elem_phi(self, phi):
+        """Mean φ per element (for degradation g(φ))."""
         return phi[self._elem_nodes].mean(axis=1)
+    
+    def _elem_phi_max(self, phi):
+        """Max φ per element (for erosion — crack passes through if ANY node has high φ)."""
+        return phi[self._elem_nodes].max(axis=1)
     
     def _to_3d(self, elem_data):
         vol = np.zeros(self.shape, dtype=np.float32)
@@ -499,17 +518,13 @@ class FullFractureEngine:
         params.validate()
         self.params = params
     
-    def simulate(self, n_load_steps=20, phi_update_every=5,
+    def simulate(self, n_load_steps=50, sub_steps_per_load=50,
                  verbose=True) -> FEMResult:
         """Full fracture simulation via dynamic relaxation.
         
         Uses mass scaling + heavy damping for quasi-static loading.
         At each load step: run explicit dynamics until equilibrium,
         then update phase field and erode elements.
-        
-        Args:
-            n_load_steps: number of incremental load steps
-            phi_update_every: update φ every N sub-steps per load step
         """
         params = self.params
         if params is None:
@@ -533,20 +548,23 @@ class FullFractureEngine:
         active = np.ones(self.n_elements, dtype=bool)
         
         dt = self._dt_cfl
-        sub_steps_per_load = 25  # relax for 25 sub-steps per load increment
         total_steps = n_load_steps * sub_steps_per_load
         
         F_ext_full = self._compute_external_force(params)
         
-        # Heavy damping for dynamic relaxation (quasi-static)
-        # α ~ 2ω₁ where ω₁ is first natural frequency
-        # For overdamped: α > 2ω₁. We use relative damping.
-        damping_ratio = 0.9  # near critically damped
+        # Dynamic relaxation damping
+        # ω ≈ c_scaled / h, where c_scaled = √(E / ρ_scaled)
+        # ρ_scaled = ρ × mass_scale = ρ × 1e-9 × 1e6 = ρ × 1e-3
+        rho_scaled_mean = self._rho.mean() * 1e-3  # tonnes/mm³ (mass-scaled)
+        omega_approx = np.sqrt(E_field.mean() / rho_scaled_mean) / self.h
+        damping_ratio = 0.9
+        alpha_rayleigh = 2 * damping_ratio * omega_approx
         
         if verbose:
             print(f"\n  Dynamic relaxation: {n_load_steps} load steps × "
                   f"{sub_steps_per_load} sub-steps = {total_steps} total")
-            print(f"  Δt={dt*1e3:.3f}ms, damping={damping_ratio}")
+            print(f"  Δt={dt*1e3:.3f}ms, damping={damping_ratio}, "
+                  f"α_R={alpha_rayleigh:.1f}/s")
         
         step_count = 0
         
@@ -571,14 +589,9 @@ class FullFractureEngine:
                 # Contact
                 F_contact = self._compute_contact_forces(u, active, phi_elem)
                 
-                # Acceleration with heavy damping
+                # Acceleration with Rayleigh damping
                 F_total = F_ext - F_int + F_contact
                 a = F_total / self._M_lumped
-                
-                # Mass-proportional damping: F_damp = -α·M·v → a_damp = -α·v
-                # ω_approx ≈ c / h (wave-based estimate)
-                omega_approx = np.sqrt(E_field.mean() / (self._rho.mean() * 1e-9 * 1e6)) / self.h
-                alpha_rayleigh = 2 * damping_ratio * omega_approx
                 a -= alpha_rayleigh * v
                 
                 # Central difference
@@ -588,23 +601,25 @@ class FullFractureEngine:
                 
                 # Displacement sanity cap (vertebra is ~30mm tall)
                 u_max = np.abs(u).max()
-                if u_max > 5.0:  # max 5mm displacement
-                    u *= 5.0 / u_max
-                    v *= 0.1  # kill most velocity
+                if u_max > 10.0:  # max 10mm displacement
+                    u *= 10.0 / u_max
+                    v *= 0.1
             
             # Phase field update after each load step
             phi, history = self._solve_phase_field(psi, history, phi, active)
             
-            # Element erosion
-            phi_elem = self._elem_phi(phi)
-            newly_eroded = active & (phi_elem > EROSION_THRESHOLD)
+            # Element erosion (use MAX, not mean — crack through ANY node erodes element)
+            phi_elem_max = self._elem_phi_max(phi)
+            newly_eroded = active & (phi_elem_max > EROSION_THRESHOLD)
             active[newly_eroded] = False
             n_eroded = (~active).sum()
             
             if verbose:
+                psi_max = psi.max()
                 ke = 0.5 * np.sum(self._M_lumped * v**2)
                 se = psi.sum() * self._V_elem
                 print(f"    |u|={np.abs(u).max():.3f}mm, φ_max={phi.max():.3f}, "
+                      f"ψ_max={psi_max:.2f}, "
                       f"eroded={n_eroded} ({n_eroded/self.n_elements*100:.1f}%), "
                       f"KE/SE={ke/max(se,1e-20):.2e}")
             
@@ -643,7 +658,7 @@ class FullFractureEngine:
     
     def _classify(self, phi, u, active):
         """AO classification from crack pattern."""
-        phi_e = self._elem_phi(phi)
+        phi_e = self._elem_phi_max(phi)  # Use max for detecting cracked elements
         cracked = phi_e > 0.5
         frac = cracked.sum() / self.n_elements
         
@@ -782,7 +797,21 @@ def demo(use_cuda=False):
     out_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'fracture_v7_demo')
     os.makedirs(out_dir, exist_ok=True)
     
+    # Log file for results
+    log_path = os.path.join(out_dir, 'v7_log.txt')
+    import sys as _sys
+    class Tee:
+        def __init__(self, *fps):
+            self.fps = fps
+        def write(self, s):
+            for f in self.fps: f.write(s); f.flush()
+        def flush(self):
+            for f in self.fps: f.flush()
+    log_fp = open(log_path, 'w')
+    _sys.stdout = Tee(_sys.stdout, log_fp)
+    
     scenarios = [
+        ('wedge', CausalParameters(3.0, 20.0, 0.0, 0.8)),
         ('burst', CausalParameters(8.0, 5.0, 0.0, 0.5)),
     ]
     
@@ -793,7 +822,7 @@ def demo(use_cuda=False):
         
         engine.set_causal_params(params)
         engine._frames = []
-        result = engine.simulate(n_load_steps=20)
+        result = engine.simulate(n_load_steps=50, sub_steps_per_load=50)
         
         # Save animation
         gif_path = os.path.join(out_dir, f'v7_{name}_fracture.gif')
